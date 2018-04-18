@@ -2,7 +2,13 @@
 Scans a directory for SNC Patient IMRT QA results.
 
 
-###
+### Install
 ~~~~
-$ python main.py <init_absolute_directory> <optional_output_filename>
+$ pip install imrt-qa-data-miner
+~~~~
+
+
+### How to run
+~~~~
+$ imrt-qa-data-miner <abs-directory-to-start-scan> <option-output-filename>
 ~~~~
