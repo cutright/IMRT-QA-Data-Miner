@@ -21,7 +21,7 @@ setup(
     install_requires=requires,
     entry_points={
         'console_scripts': [
-            'imrt-qa-data-miner=dvh.__main__:main',
+            'imrt-qa-data-miner=__main__:main',
         ],
     },
     long_description="""IMRT QA Data Miner
