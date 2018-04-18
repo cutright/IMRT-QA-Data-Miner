@@ -9,7 +9,7 @@ setup(
     name='imrt-qa-data-miner',
     include_package_data=True,
     packages=find_packages(),
-    version='0.1.1',
+    version='0.1.2',
     description='Scans a directory for SNC Patient IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',
