@@ -10,5 +10,5 @@ $ pip install imrt-qa-data-miner
 
 ### How to run
 ~~~~
-$ imrt-qa-data-miner <abs-directory-to-start-scan> <option-output-filename>
+$ imrt-qa-data-miner <abs-directory-to-start-scan> <optional-output-filename>
 ~~~~
