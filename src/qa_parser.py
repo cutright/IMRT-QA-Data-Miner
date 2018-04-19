@@ -1,21 +1,22 @@
 from pdf_to_text import convert_pdf_to_txt
 
 
+def pdf_to_qa_result(abs_file_path):
+
+    try:
+        text = convert_pdf_to_txt(abs_file_path).split('\n')
+    except:
+        return False
+
+    if is_file_snc_mapcheck(text):
+        return MapcheckResult(text).data_to_csv()
+
+
 class MapcheckResult:
-    def __init__(self, abs_file_path):
-
-        try:
-            text = convert_pdf_to_txt(abs_file_path)
-        except:
-            return False
-        text = text.split('\n')
-        self.text = text
-
-        if not self.is_file_snc_mapcheck():
-            return False
-
+    def __init__(self, text_data):
+        self.text = text_data
         self.date, self.hospital = [], []
-        for row in text:
+        for row in text_data:
             if row.find('Date: ') > -1:
                 self.date = row.strip('Date: ')
             if row.find('Hospital: ') > -1:
@@ -24,26 +25,23 @@ class MapcheckResult:
             if self.date and self.hospital:
                 break
 
-        self.qa_file_parameter = self.get_data_indicies('QA File Parameter')
+        self.qa_file_parameter = self.get_group_results('QA File Parameter')
 
         try:
-            text.index('Absolute Dose Comparison')
+            self.text.index('Absolute Dose Comparison')
             self.dose_comparison_type = 'Absolute Dose Comparison'
         except ValueError:
             self.dose_comparison_type = 'Relative Comparison'
-        self.dose_comparison = self.get_data_indicies(self.dose_comparison_type)
+        self.dose_comparison = self.get_group_results(self.dose_comparison_type)
 
         try:
-            text.index('Summary (Gamma Analysis)')
+            self.text.index('Summary (Gamma Analysis)')
             self.analysis_type = 'Gamma'
         except ValueError:
             self.analysis_type = 'DTA'
-        self.summary = self.get_data_indicies('Summary (%s Analysis)' % self.analysis_type)
+        self.summary = self.get_group_results('Summary (%s Analysis)' % self.analysis_type)
 
-        if self.qa_file_parameter['Patient Name'] == 'Set1':
-            print abs_file_path
-
-    def get_data_indicies(self, data_group):
+    def get_group_results(self, data_group):
         group_start = self.text.index(data_group)
         var_name_start = group_start + 1
         data_start = self.text[var_name_start:-1].index('') + 1 + var_name_start
@@ -74,23 +72,23 @@ class MapcheckResult:
                self.summary['Passed'],
                self.summary['Failed'],
                self.summary['% Passed']]
-
         return ','.join(row)
 
-    def is_file_snc_mapcheck(self):
 
-        find_these = {'QA File Parameter': False,
-                      'Threshold (%)': False,
-                      'Notes': False,
-                      'Reviewed By :': False}
+def is_file_snc_mapcheck(text_data):
 
-        for row in self.text:
-            if row in list(find_these):
-                find_these[row] = True
+    find_these = {'QA File Parameter': False,
+                  'Threshold (%)': False,
+                  'Notes': False,
+                  'Reviewed By :': False}
 
-        answer = True
-        for i in list(find_these):
-            answer = answer * find_these[i]
+    for row in text_data:
+        if row in list(find_these):
+            find_these[row] = True
 
-        return answer
+    answer = True
+    for i in list(find_these):
+        answer = answer * find_these[i]
+
+    return answer
 

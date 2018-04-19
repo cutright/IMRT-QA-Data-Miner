@@ -1,5 +1,5 @@
 from __future__ import print_function
-from mapcheck_result import MapcheckResult
+from qa_parser import pdf_to_qa_result
 import os
 import sys
 from datetime import datetime
@@ -28,7 +28,7 @@ def process_data(init_directory, results_file):
         for fname in fileList:
             if fname.find('.pdf') > -1:
                 try:
-                    row = MapcheckResult(os.path.join(dirName, fname)).data_to_csv()
+                    row = pdf_to_qa_result(os.path.join(dirName, fname))
                     if row:
                         with open(results_file, "a") as csv:
                             csv.write(row + '\n')
