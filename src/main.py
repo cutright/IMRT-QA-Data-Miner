@@ -1,3 +1,11 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+main program for IMRT QA PDF report parser
+Created on Wed Apr 18 2018
+@author: Dan Cutright, PhD
+"""
+
 from __future__ import print_function
 from qa_parser import pdf_to_qa_result
 import os
@@ -41,8 +49,12 @@ def process_data(init_directory, results_file):
 
 def main():
 
+    if len(sys.argv) > 3:
+        print("Too many arguments provided.")
+        return
+
     if len(sys.argv) < 2:
-        print("Please enter an initial directory for scanning.")
+        print("Please include an initial directory for scanning when calling.")
         return
 
     if not os.path.isdir(sys.argv[1]):
