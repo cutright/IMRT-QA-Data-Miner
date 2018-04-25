@@ -31,7 +31,6 @@ def process_data(init_directory, results_file):
                    '% Passed\n']
         csv.write(','.join(columns))
 
-    # Set the directory you want to start from
     for dirName, subdirList, fileList in os.walk(init_directory):
         for fname in fileList:
             if fname.find('.pdf') > -1:

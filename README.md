@@ -12,3 +12,7 @@ $ pip install imrt-qa-data-miner
 ~~~~
 $ imrt-qa-data-miner <abs-directory-to-start-scan> <optional-output-filename>
 ~~~~
+
+### Notes
+This script was written specifically for SNC Patient, but I'd be happy to include support for other vendors 
+if someone could provide some anonymized example reports.
