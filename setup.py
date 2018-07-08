@@ -2,14 +2,13 @@ from setuptools import setup, find_packages
 
 requires = [
     'pdfminer',
-    'python-dateutil',
 ]
 
 setup(
     name='imrt-qa-data-miner',
     include_package_data=True,
     packages=find_packages(),
-    version='0.1.4',
+    version='0.1.9',
     description='Scans a directory for SNC Patient IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',
@@ -21,7 +20,7 @@ setup(
     install_requires=requires,
     entry_points={
         'console_scripts': [
-            'imrt-qa-data-miner=src.main:main',
+            'imrt-qa-data-miner=imrt-qa-data-miner.main:main',
         ],
     },
     long_description="""IMRT QA Data Miner

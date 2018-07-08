@@ -10,7 +10,7 @@ $ pip install imrt-qa-data-miner
 
 ### How to run
 ~~~~
-$ imrt-qa-data-miner <abs-directory-to-start-scan> <optional-output-filename>
+$ imrt-qa-data-miner <initial-scan-dir> <optional-output-filename>
 ~~~~
 
 ### Notes

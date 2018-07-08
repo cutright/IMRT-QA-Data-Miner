@@ -7,6 +7,7 @@ Created on Wed Apr 18 2018
 """
 
 from pdf_to_text import convert_pdf_to_txt
+from os.path import basename
 
 
 def pdf_to_qa_result(abs_file_path):
@@ -17,7 +18,7 @@ def pdf_to_qa_result(abs_file_path):
         return False
 
     if is_file_snc_mapcheck(text):
-        return MapcheckResult(text).data_to_csv()
+        return MapcheckResult(text).data_to_csv() + ',' + basename(abs_file_path)
 
 
 class MapcheckResult:
@@ -27,8 +28,8 @@ class MapcheckResult:
         for row in text_data:
             if row.find('Date: ') > -1:
                 self.date = row.strip('Date: ')
-            if row.find('Hospital: ') > -1:
-                self.hospital = row.strip('Hospital: ')
+            if row.find('Hospital Name: ') > -1:
+                self.hospital = row.strip('Hospital Name: ')
 
             if self.date and self.hospital:
                 break
@@ -68,8 +69,8 @@ class MapcheckResult:
 
     def data_to_csv(self):
         row = [self.qa_file_parameter['Patient Name'].replace(',', '^'),
-               self.qa_file_parameter['Patient ID'],
-               self.qa_file_parameter['Plan Date'],
+               self.qa_file_parameter['Patient ID'].replace(',', '^'),
+               self.qa_file_parameter['Plan Date'].replace(',', '^'),
                self.dose_comparison_type,
                self.dose_comparison['Difference (%)'],
                self.dose_comparison['Distance (mm)'],
