@@ -1,10 +1,4 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-"""
-IMRT QA PDF report parser
-Created on Wed Apr 18 2018
-@author: Dan Cutright, PhD
-"""
 
 
 DELIMITER = ';'
@@ -27,4 +21,5 @@ def are_all_of_these_strings_in_text_data(text_data, list_of_strings):
 
 
 def get_csv(data, columns):
-    return DELIMITER.join([str(data[column]).replace(DELIMITER, ALTERNATE) for column in columns])
+    clean_csv = [str(data[column]).replace(DELIMITER, ALTERNATE) for column in columns]
+    return DELIMITER.join(clean_csv)

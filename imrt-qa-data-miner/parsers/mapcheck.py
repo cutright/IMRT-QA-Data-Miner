@@ -6,10 +6,10 @@ from utilities import get_csv
 class MapcheckReport:
     def __init__(self):
         self.report_type = 'mapcheck'
-        self.columns = ['Patient Name', 'Patient ID', 'Plan Date', 'Dose Type', 'Difference (%)', 'Distance(mm)',
+        self.columns = ['Patient Name', 'Patient ID', 'Plan Date', 'Dose Type', 'Difference (%)', 'Distance (mm)',
                         'Threshold (%)', 'Meas Uncertainty', 'Analysis Type', 'Total Points', 'Passed', 'Failed',
                         '% Passed']
-        self.identifiers = ['QA File Parameter', 'Threshold (%)', 'Notes', 'Reviewed By :']
+        self.identifiers = ['QA File Parameter', 'Threshold', 'Notes', 'Reviewed By :', 'SSD', 'Depth', 'Energy']
         self.text = None
         self.data = {}
 
@@ -34,6 +34,10 @@ class MapcheckReport:
         except ValueError:
             self.data['dose_comparison_type'] = 'Relative Comparison'
         self.data['dose_comparison'] = self.get_group_results(self.data['dose_comparison_type'])
+        if '% Diff' in list(self.data['dose_comparison']):  # Alternate for Difference (%) for some versions of report?
+            self.data['dose_comparison']['Difference (%)'] = self.data['dose_comparison']['% Diff']
+        if 'Threshold' in list(self.data['dose_comparison']):  # Alternate for Threshold (%) for some versions of report?
+            self.data['dose_comparison']['Threshold (%)'] = self.data['dose_comparison']['Threshold']
 
         # Summary Analysis Block
         try:

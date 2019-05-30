@@ -25,7 +25,7 @@ class ReportParser:
     """
     def __init__(self, text):
         self.report = self.get_report(text)
-        if self.report is not None:
+        if self.report:
             self.columns = self.report.columns
             self.csv = self.report.csv
             self.report_type = self.report.report_type

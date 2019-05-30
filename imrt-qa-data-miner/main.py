@@ -26,20 +26,21 @@ def pdf_to_qa_result(abs_file_path):
 
     parsed_report_obj = ReportParser(text)
     if parsed_report_obj.report is not None:
-        return parsed_report_obj.summary_csv + DELIMITER + basename(abs_file_path)
+        return parsed_report_obj.csv + DELIMITER + basename(abs_file_path)
 
 
-def process_data(init_directory, results_file):
+def process_data(init_directory, results_file, require_pdf_ext=True):
 
     # don't forget to write column headers
     for dirName, subdirList, fileList in os.walk(init_directory):
         for fileName in fileList:
-            if fileName.endswith('.pdf'):
+            if not require_pdf_ext or fileName.endswith('.pdf'):
                 file_path = os.path.join(dirName, fileName)
                 try:
                     row = pdf_to_qa_result(file_path)
                     if row:
                         with open(results_file, "a") as csv:
+                            print(row)
                             csv.write(row + '\n')
                         print("Processed: %s" % file_path)
                 except Exception as e:
