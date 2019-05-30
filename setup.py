@@ -11,8 +11,8 @@ setup(
     name='imrt-qa-data-miner',
     include_package_data=True,
     packages=find_packages(),
-    version='0.1.9',
-    description='Scans a directory for SNC Patient IMRT QA results',
+    version='0.2',
+    description='Scans a directory for IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',
     url='https://github.com/cutright/IMRT-QA-Data-Miner/',
@@ -28,7 +28,7 @@ setup(
     },
     long_description="""IMRT QA Data Miner
     
-    This software will iteratively scan all files with in a directory to extract data from Sun Nuclear's
-    SNC Patient PDF reports and generate a csv file.
+    This software will iteratively scan all files with in a directory to extract data from IMRT QA reports 
+    and generate a csv file.
     """
 )

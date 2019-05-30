@@ -24,9 +24,9 @@ def pdf_to_qa_result(abs_file_path):
         print("Non-compatible PDF detected: %s" % abs_file_path)
         return ''
 
-    parsed_report_obj = ReportParser(text)
-    if parsed_report_obj.report is not None:
-        return parsed_report_obj.csv + DELIMITER + basename(abs_file_path)
+    report_obj = ReportParser(text)
+    if report_obj.report is not None:
+        return report_obj.csv + DELIMITER + basename(abs_file_path), report_obj.report_type, report_obj.columns
 
 
 def process_data(init_directory, results_file, require_pdf_ext=True):
@@ -37,9 +37,13 @@ def process_data(init_directory, results_file, require_pdf_ext=True):
             if not require_pdf_ext or fileName.endswith('.pdf'):
                 file_path = os.path.join(dirName, fileName)
                 try:
-                    row = pdf_to_qa_result(file_path)
+                    row, report_type, columns = pdf_to_qa_result(file_path)
+                    current_file = "%s_%s" % (report_type, results_file)
                     if row:
-                        with open(results_file, "a") as csv:
+                        if not os.path.isfile(current_file):
+                            with open(current_file, 'w') as csv:
+                                csv.write(DELIMITER.join(columns))
+                        with open(current_file, "a") as csv:
                             csv.write(row + '\n')
                         print("Processed: %s" % file_path)
                 except Exception as e:
@@ -49,7 +53,7 @@ def process_data(init_directory, results_file, require_pdf_ext=True):
 
 def main():
 
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 2:
         print("Too many arguments provided.")
         return
 
@@ -57,16 +61,9 @@ def main():
         print("Please include an initial directory for scanning when calling.")
         return
 
-    if not os.path.isdir(sys.argv[1]):
-        print("Invalid directory: %s" % sys.argv[1])
-        return
-
     init_directory = sys.argv[1]
 
-    if len(sys.argv) == 3:
-        output_file = sys.argv[2]
-    else:
-        output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
+    output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
 
     process_data(init_directory, output_file)
 
