@@ -8,7 +8,7 @@ requires = [
 ]
 
 setup(
-    name='imrt-qa-data-miner',
+    name='IQDM',
     include_package_data=True,
     packages=find_packages(),
     version='0.2',
@@ -23,7 +23,7 @@ setup(
     install_requires=requires,
     entry_points={
         'console_scripts': [
-            'imrt-qa-data-miner=imrt-qa-data-miner.main:main',
+            'IQDM=IQDM.main:main',
         ],
     },
     long_description="""IMRT QA Data Miner
