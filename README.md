@@ -10,7 +10,7 @@ $ pip install imrt-qa-data-miner
 
 ### How to run
 ~~~~
-$ imrt-qa-data-miner <initial-scan-dir>
+$ IQDM <initial-scan-dir>
 ~~~~
 
 ### Notes
