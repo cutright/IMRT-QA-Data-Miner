@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from utilities import are_all_of_these_strings_in_text_data as all_in_text
 from parsers.mapcheck import MapcheckReport
 from parsers.delta4 import Delta4Report
