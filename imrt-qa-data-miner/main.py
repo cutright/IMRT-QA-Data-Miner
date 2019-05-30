@@ -7,43 +7,44 @@ Created on Wed Apr 18 2018
 """
 
 from __future__ import print_function
-from qa_parser import pdf_to_qa_result
 import os
 import sys
 from datetime import datetime
+from pdf_to_text import convert_pdf_to_txt
+from os.path import basename
+from utilities import DELIMITER
+from parsers.parser import ReportParser
+
+
+def pdf_to_qa_result(abs_file_path):
+
+    try:
+        text = convert_pdf_to_txt(abs_file_path)
+    except:
+        print("Non-compatible PDF detected: %s" % abs_file_path)
+        return ''
+
+    parsed_report_obj = ReportParser(text)
+    if parsed_report_obj.report is not None:
+        return parsed_report_obj.summary_csv + DELIMITER + basename(abs_file_path)
 
 
 def process_data(init_directory, results_file):
 
-    with open(results_file, "w") as csv:
-        columns = ['Patient Name',
-                   'Patient ID',
-                   'Plan Date',
-                   'Dose Type',
-                   'Difference (%)',
-                   'Distance(mm)',
-                   'Threshold (%)',
-                   'Meas Uncertainty',
-                   'Analysis Type',
-                   'Total Points',
-                   'Passed',
-                   'Failed',
-                   '% Passed\n']
-        csv.write(','.join(columns))
-
+    # don't forget to write column headers
     for dirName, subdirList, fileList in os.walk(init_directory):
-        for fname in fileList:
-            if fname.find('.pdf') > -1:
+        for fileName in fileList:
+            if fileName.endswith('.pdf'):
+                file_path = os.path.join(dirName, fileName)
                 try:
-                    row = pdf_to_qa_result(os.path.join(dirName, fname))
+                    row = pdf_to_qa_result(file_path)
                     if row:
                         with open(results_file, "a") as csv:
                             csv.write(row + '\n')
-                        print("Processed: %s" % os.path.join(dirName, fname))
-                    else:
-                        print("Non-compatible PDF detected: %s" % os.path.join(dirName, fname))
-                except:
-                    print("Non-compatible PDF detected: %s" % os.path.join(dirName, fname))
+                        print("Processed: %s" % file_path)
+                except Exception as e:
+                    print(str(e))
+                    print("Non-compatible PDF detected: %s" % file_path)
 
 
 def main():

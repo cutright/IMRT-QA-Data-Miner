@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 requires = [
     'pdfminer',
-    'numpy'
+    'numpy',
+    'python-dateutil'
 ]
 
 setup(
