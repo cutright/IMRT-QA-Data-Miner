@@ -2,7 +2,17 @@
 Scans a directory for IMRT QA results.
 
 
-### Desktop version development
-This branch contains code under active development. It is not ready for generic use. Please see the 
-master branch for the latest release for the general public.
+### Install
+~~~~
+$ pip install imrt-qa-data-miner
+~~~~
 
+
+### How to run
+~~~~
+$ imrt-qa-data-miner <initial-scan-dir>
+~~~~
+
+### Notes
+This script was written specifically for SNC Patient and Delta4, but I'd be happy to include support for other vendors 
+if someone could provide some anonymized example reports.
