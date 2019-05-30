@@ -11,7 +11,6 @@ import os
 import sys
 from datetime import datetime
 from pdf_to_text import convert_pdf_to_txt
-from os.path import basename
 from utilities import DELIMITER
 from parsers.parser import ReportParser
 
@@ -26,12 +25,11 @@ def pdf_to_qa_result(abs_file_path):
 
     report_obj = ReportParser(text)
     if report_obj.report is not None:
-        return report_obj.csv + DELIMITER + basename(abs_file_path), report_obj.report_type, report_obj.columns
+        return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns
 
 
 def process_data(init_directory, results_file, require_pdf_ext=True):
 
-    # don't forget to write column headers
     for dirName, subdirList, fileList in os.walk(init_directory):
         for fileName in fileList:
             if not require_pdf_ext or fileName.endswith('.pdf'):
@@ -42,7 +40,7 @@ def process_data(init_directory, results_file, require_pdf_ext=True):
                     if row:
                         if not os.path.isfile(current_file):
                             with open(current_file, 'w') as csv:
-                                csv.write(DELIMITER.join(columns))
+                                csv.write(DELIMITER.join(columns) + '\n')
                         with open(current_file, "a") as csv:
                             csv.write(row + '\n')
                         print("Processed: %s" % file_path)
@@ -62,9 +60,7 @@ def main():
         return
 
     init_directory = sys.argv[1]
-
     output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
-
     process_data(init_directory, output_file)
 
 
