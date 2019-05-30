@@ -40,7 +40,6 @@ def process_data(init_directory, results_file, require_pdf_ext=True):
                     row = pdf_to_qa_result(file_path)
                     if row:
                         with open(results_file, "a") as csv:
-                            print(row)
                             csv.write(row + '\n')
                         print("Processed: %s" % file_path)
                 except Exception as e:
@@ -67,7 +66,7 @@ def main():
     if len(sys.argv) == 3:
         output_file = sys.argv[2]
     else:
-        output_file = "results_%s.txt" % str(datetime.now()).replace(':', '-').replace('.', '-')
+        output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
 
     process_data(init_directory, output_file)
 
