@@ -10,7 +10,7 @@ import os
 import sys
 from datetime import datetime
 from pdf_to_text import convert_pdf_to_txt
-from utilities import DELIMITER
+from utilities import DELIMITER, ALTERNATE
 from parsers.parser import ReportParser
 
 
@@ -24,7 +24,8 @@ def pdf_to_qa_result(abs_file_path):
 
     report_obj = ReportParser(text)
     if report_obj.report is not None:
-        return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns
+        return report_obj.csv + DELIMITER + abs_file_path.replace(DELIMITER, ALTERNATE),\
+               report_obj.report_type, report_obj.columns
 
 
 def process_data(init_directory, results_file, require_pdf_ext=True):
@@ -60,6 +61,7 @@ def main():
 
     init_directory = sys.argv[1]
     output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
+
     process_data(init_directory, output_file)
 
 

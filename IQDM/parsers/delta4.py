@@ -24,20 +24,45 @@ class Delta4Report:
         self.text = text_data.split('\n')
 
         # Patient information
-        self.data['patient_name'] = self.text[2]
-        self.data['patient_id'] = self.text[3]
+        if 'PRE-TREATMENT REPORT' in self.text[3]:
+            self.data['patient_name'] = self.text[0]
+            self.data['patient_id'] = self.text[1]
+        elif 'Clinic' not in self.text[2]:
+            self.data['patient_name'] = self.text[2]
+            self.data['patient_id'] = self.text[3]
+        else:
+            if 'Treatment Summary' in self.text:
+                tx_sum_index = self.text.index('Treatment Summary')
+                self.data['patient_name'] = self.text[tx_sum_index-3]
+                self.data['patient_id'] = self.text[tx_sum_index-2]
+            else:
+                self.data['patient_name'] = 'Not found'
+                self.data['patient_id'] = 'Not found'
 
         # Beam
         self.index_start['Beam'] = self.get_index_of_next_text_block(self.get_string_index_in_text('°'))
         self.index_end['Beam'] = self.get_index_of_next_text_block(self.index_start['Beam']) - 1
+        if self.text[self.index_start['Beam']] == 'Gantry':
+            self.index_start['Beam'] = self.get_index_of_next_text_block(self.index_end['Beam'])
+            self.index_end['Beam'] = self.get_index_of_next_text_block(self.index_start['Beam']) - 1
         self.data['Beam'] = self.get_data_block('Beam')
+        if 'Fraction' in self.data['Beam'][0]:
+            self.data['Beam'].pop(0)
 
         # Gantry
         self.index_start['Gantry'] = self.get_index_of_next_text_block(self.index_end['Beam'])
         self.index_end['Gantry'] = self.get_index_of_next_text_block(self.index_start['Gantry']) - 1
         self.data['Gantry'] = ['N/A'] + self.get_data_block('Gantry')
+        if 'Fraction' in self.data['Gantry']:
+            self.data['Gantry'].pop(self.data['Gantry'].index('Fraction'))
+        energy_override = []  # sometimes the energy is on the same line as the gantry
         for i, row in enumerate(self.data['Gantry']):
             self.data['Gantry'][i] = row.replace('\xc2', '').replace('\xb0', '')
+            energy_override.append(None)
+            row_split = row.split(' ')
+            if len(row_split) > 3:
+                energy_override[-1] = ' '.join(row_split[-2:])
+                self.data['Gantry'][i] = self.data['Gantry'][i].replace(energy_override[-1], '').strip()
 
         # Dose and analysis
         self.index_start['Analysis'] = self.get_string_index_in_text('Daily corr Norm') + 2
@@ -86,6 +111,11 @@ class Delta4Report:
             self.index_start['Energy'] = self.get_index_of_next_text_block(self.index_start['Energy'])
         self.index_end['Energy'] = self.get_index_of_next_text_block(self.index_start['Energy']) - 1
         self.data['Energy'] = ['N/A'] + self.get_data_block('Energy')
+        if any(energy_override):  # replace values with overrides found in Gantry code block
+            for i, override in enumerate(energy_override):
+                if override is not None:
+                    if len(self.data['Energy']) > i:
+                        self.data['Energy'][i] = override
 
         # Gamma Criteria
         self.index_start['Gamma Criteria'] = self.text.index('Parameter Definitions & Acceptance Criteria, Detectors')
@@ -138,8 +168,8 @@ class Delta4Report:
                     pass
         return None
 
-    def get_string_index_in_text(self, string):
-        for i, row in enumerate(self.text):
+    def get_string_index_in_text(self, string, start_index=0):
+        for i, row in enumerate(self.text[start_index:]):
             if string in row:
                 return i
         return None
