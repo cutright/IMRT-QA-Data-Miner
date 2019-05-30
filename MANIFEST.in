@@ -1,4 +1,4 @@
-include src/*.py
+recursive-include imrt-qa-data-miner/*.py
 README.md
 LICENSE
 setup.py

@@ -7,48 +7,51 @@ Created on Wed Apr 18 2018
 """
 
 from __future__ import print_function
-from qa_parser import pdf_to_qa_result
 import os
 import sys
 from datetime import datetime
+from pdf_to_text import convert_pdf_to_txt
+from utilities import DELIMITER
+from parsers.parser import ReportParser
 
 
-def process_data(init_directory, results_file):
+def pdf_to_qa_result(abs_file_path):
 
-    with open(results_file, "w") as csv:
-        columns = ['Patient Name',
-                   'Patient ID',
-                   'Plan Date',
-                   'Dose Type',
-                   'Difference (%)',
-                   'Distance(mm)',
-                   'Threshold (%)',
-                   'Meas Uncertainty',
-                   'Analysis Type',
-                   'Total Points',
-                   'Passed',
-                   'Failed',
-                   '% Passed\n']
-        csv.write(','.join(columns))
+    try:
+        text = convert_pdf_to_txt(abs_file_path)
+    except:
+        print("Non-compatible PDF detected: %s" % abs_file_path)
+        return ''
+
+    report_obj = ReportParser(text)
+    if report_obj.report is not None:
+        return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns
+
+
+def process_data(init_directory, results_file, require_pdf_ext=True):
 
     for dirName, subdirList, fileList in os.walk(init_directory):
-        for fname in fileList:
-            if fname.find('.pdf') > -1:
+        for fileName in fileList:
+            if not require_pdf_ext or fileName.endswith('.pdf'):
+                file_path = os.path.join(dirName, fileName)
                 try:
-                    row = pdf_to_qa_result(os.path.join(dirName, fname))
+                    row, report_type, columns = pdf_to_qa_result(file_path)
+                    current_file = "%s_%s" % (report_type, results_file)
                     if row:
-                        with open(results_file, "a") as csv:
+                        if not os.path.isfile(current_file):
+                            with open(current_file, 'w') as csv:
+                                csv.write(DELIMITER.join(columns) + '\n')
+                        with open(current_file, "a") as csv:
                             csv.write(row + '\n')
-                        print("Processed: %s" % os.path.join(dirName, fname))
-                    else:
-                        print("Non-compatible PDF detected: %s" % os.path.join(dirName, fname))
-                except:
-                    print("Non-compatible PDF detected: %s" % os.path.join(dirName, fname))
+                        print("Processed: %s" % file_path)
+                except Exception as e:
+                    print(str(e))
+                    print("Non-compatible PDF detected: %s" % file_path)
 
 
 def main():
 
-    if len(sys.argv) > 3:
+    if len(sys.argv) > 2:
         print("Too many arguments provided.")
         return
 
@@ -56,17 +59,8 @@ def main():
         print("Please include an initial directory for scanning when calling.")
         return
 
-    if not os.path.isdir(sys.argv[1]):
-        print("Invalid directory: %s" % sys.argv[1])
-        return
-
     init_directory = sys.argv[1]
-
-    if len(sys.argv) == 3:
-        output_file = sys.argv[2]
-    else:
-        output_file = "results_%s.txt" % str(datetime.now()).replace(':', '-').replace('.', '-')
-
+    output_file = "results_%s.csv" % str(datetime.now()).replace(':', '-').replace('.', '-')
     process_data(init_directory, output_file)
 
 
