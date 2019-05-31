@@ -1,4 +1,4 @@
-recursive-include imrt-qa-data-miner/*.py
+recursive-include IQDM/*.py
 README.md
 LICENSE
 setup.py
