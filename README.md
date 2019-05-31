@@ -4,7 +4,7 @@ Scans a directory for IMRT QA results.
 
 ### Install
 ~~~~
-$ pip install imrt-qa-data-miner
+$ pip install IQDM
 ~~~~
 
 
