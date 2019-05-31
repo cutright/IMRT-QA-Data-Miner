@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+main program for IMRT QA PDF report parser
+Created on Thu May 30 2019
+@author: Dan Cutright, PhD
+"""
 
-from utilities import are_all_of_these_strings_in_text_data as all_in_text
+from utilities import are_all_strings_in_text
 from parsers.mapcheck import MapcheckReport
 from parsers.delta4 import Delta4Report
 
@@ -36,7 +41,7 @@ class ReportParser:
     def get_report(text):
         for report_class in REPORT_CLASSES:
             rc = report_class()  # initialize class to access identifiers
-            if all_in_text(text, rc.identifiers):
+            if are_all_strings_in_text(text, rc.identifiers):
                 rc.process_data(text)  # parse the text data
                 return rc
         return None

@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+main program for IMRT QA PDF report parser
+Created on Thu May 30 2019
+@author: Dan Cutright, PhD
+"""
 
 from utilities import get_csv
 

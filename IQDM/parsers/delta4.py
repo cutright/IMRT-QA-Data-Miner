@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+main program for IMRT QA PDF report parser
+Created on Thu May 30 2019
+@author: Dan Cutright, PhD
+"""
 
-from utilities import are_all_of_these_strings_in_text_data, get_csv
+from utilities import are_all_strings_in_text, get_csv
 from dateutil.parser import parse as date_parser
 
 
@@ -159,8 +164,8 @@ class Delta4Report:
 
     def get_index_of_first_date(self):
         for i, row in enumerate(self.text):
-            if are_all_of_these_strings_in_text_data(row, ['/', ':', 'M']) or \
-                    are_all_of_these_strings_in_text_data(row, ['.', ':', 'M']):
+            if are_all_strings_in_text(row, ['/', ':', 'M']) or \
+                    are_all_strings_in_text(row, ['.', ':', 'M']):
                 try:
                     date_parser(row.split(' ')[0].strip())
                     return i
