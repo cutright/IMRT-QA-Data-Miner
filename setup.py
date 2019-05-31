@@ -11,7 +11,7 @@ setup(
     name='IQDM',
     include_package_data=True,
     packages=find_packages(),
-    version='0.2.2',
+    version='0.2.6',
     description='Scans a directory for IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',

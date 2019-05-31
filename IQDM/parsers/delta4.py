@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from utilities import are_all_strings_in_text, get_csv
+from ..utilities import are_all_strings_in_text, get_csv
 from dateutil.parser import parse as date_parser
 
 
