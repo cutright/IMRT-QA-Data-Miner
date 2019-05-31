@@ -15,6 +15,14 @@ $ IQDM <initial-scan-dir>
 This script was written specifically for SNC Patient and Delta4, but I'd be happy to include support for other vendors 
 if someone could provide some anonymized example reports.
 
+### Vendor Compatibility
+* **[Sun Nuclear](http://sunnuclear.com)**: *SNC Patient*  
+Specifically tested with Mapcheck2 reports, may also work with ArcCheck  
+* **[ScandiDos](http://scandidos.com)**: *Delta4*  
+This is still in beta, but the reported csv data is largely correct (reported energy by be off). The class parses much 
+more data (including individual beam results), but isn't currently in csv nor validated.
+
+
 ### Contributing
 If you'd like to contribute code to support a new vendor, please create a new python file in the parsers directory 
 containing a new class. This class should include the following to be compatible:
