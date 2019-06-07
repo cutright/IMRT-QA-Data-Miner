@@ -49,7 +49,11 @@ class MapcheckReport:
             self.text.index('Summary (Gamma Analysis)')
             self.data['analysis_type'] = 'Gamma'
         except ValueError:
-            self.data['analysis_type'] = 'DTA'
+            try:
+                self.data['analysis_type'] = 'DTA'
+            except ValueError:
+                self.data['analysis_type'] = 'GC'  # Gradient Correction
+
         self.data['summary'] = self.get_group_results('Summary (%s Analysis)' % self.data['analysis_type'])
 
     def get_group_results(self, data_group):
