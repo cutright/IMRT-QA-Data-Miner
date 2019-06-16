@@ -1,5 +1,5 @@
 # IMRT-QA-Data-Miner
-Scans a directory for IMRT QA results.
+Scans a directory for IMRT QA results. Requires python3.
 
 ### Install
 ~~~~
