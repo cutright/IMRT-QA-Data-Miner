@@ -11,7 +11,7 @@ from .delta4 import Delta4Report
 
 
 # These classes will be checked in ReportParser.get_report()
-REPORT_CLASSES = [MapcheckReport, Delta4Report]
+REPORT_CLASSES = [ArcCheckReport, MapcheckReport, Delta4Report]
 
 
 class ReportParser:
