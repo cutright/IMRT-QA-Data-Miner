@@ -57,13 +57,13 @@ def process_files(init_directory, ignore_extension=False, output_file=None, outp
 
     if no_recursive_search:
         for file_name in listdir(init_directory):
-            if ignore_extension or file_name.endswith('.pdf'):
+            if ignore_extension or file_name.lower().endswith('.pdf'):
                 file_path = join(init_directory, file_name)
                 process_file(file_path, output_file, output_dir)
     else:
         for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
             for fileName in fileList:
-                if ignore_extension or fileName.endswith('.pdf'):
+                if ignore_extension or fileName.lower().endswith('.pdf'):
                     file_path = join(dirName, fileName)
                     process_file(file_path, output_file, output_dir)
 
