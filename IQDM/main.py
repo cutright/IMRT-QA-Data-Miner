@@ -4,8 +4,6 @@ main program for IMRT QA PDF report parser
 Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
-
-from __future__ import print_function
 from os.path import isdir, isfile, join
 from os import walk, listdir
 from datetime import datetime
