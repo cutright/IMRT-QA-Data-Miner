@@ -129,7 +129,7 @@ class ArcCheckReport:
         patient_name = self.data['qa_file_parameter']['Patient Name'].replace('^', ' ').split(', ')
         if len(patient_name) > 1:
             last_name = patient_name[0].title()
-            first_name = patient_name[1].titel()
+            first_name = patient_name[1].title()
         elif len(patient_name) == 1:
             last_name = patient_name[0].title()
             first_name = 'n/a'
