@@ -7,9 +7,9 @@ Created on Thu May 30 2019
 from os.path import isdir, isfile, join
 from os import walk, listdir
 from datetime import datetime
-from .parsers.parser import ReportParser
-from .utilities import DELIMITER
-from .pdf_to_text import convert_pdf_to_txt
+from parsers.parser import ReportParser
+from utilities import DELIMITER
+from pdf_to_text import convert_pdf_to_txt
 import argparse
 from pathvalidate import sanitize_filename
 

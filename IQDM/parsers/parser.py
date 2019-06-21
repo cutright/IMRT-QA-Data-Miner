@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from ..utilities import are_all_strings_in_text
+from utilities import are_all_strings_in_text
 from .arccheck import ArcCheckReport
 from .mapcheck import MapcheckReport
 from .delta4 import Delta4Report
