@@ -128,16 +128,17 @@ class ArcCheckReport:
         """
         patient_name = self.data['qa_file_parameter']['Patient Name'].replace('^', ' ').split(', ')
         if len(patient_name) > 1:
-            last_name = patient_name[0]
-            first_name = patient_name[1]
+            last_name = patient_name[0].title()
+            first_name = patient_name[1].titel()
         elif len(patient_name) == 1:
-            last_name = patient_name[0]
+            last_name = patient_name[0].title()
             first_name = 'n/a'
         else:
             last_name = 'n/a'
+            first_name = 'n/a'
 
-        return {'Patient Last Name': last_name.title(),
-                'Patient First Name': first_name.title(),
+        return {'Patient Last Name': last_name,
+                'Patient First Name': first_name,
                 'Patient ID': self.data['qa_file_parameter']['Patient ID'],
                 'Plan Date': self.data['qa_file_parameter']['Plan Date'],
                 'Dose Type': self.data['dose_comparison_type'],
