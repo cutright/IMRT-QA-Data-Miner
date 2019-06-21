@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from utilities import get_csv
+from ..utilities import get_csv
 
 
 class MapcheckReport:
