@@ -50,6 +50,7 @@ class MapcheckReport:
             self.data['analysis_type'] = 'Gamma'
         except ValueError:
             try:
+                self.text.index('Summary (DTA Analysis)')
                 self.data['analysis_type'] = 'DTA'
             except ValueError:
                 self.data['analysis_type'] = 'GC'  # Gradient Correction
