@@ -50,9 +50,9 @@ if someone could provide some anonymized example reports.
 
 ### Vendor Compatibility
 * **[Sun Nuclear](http://sunnuclear.com)**: *SNC Patient*  
-Specifically tested with Mapcheck2 reports, does not currently work with ArcCheck  
+    * ArcCheck compatibility contributed by [Marc Chamberland](https://github.com/mchamberland)
 * **[ScandiDos](http://scandidos.com)**: *Delta4*  
-This is still in beta, but the reported csv data is largely correct (reported energy by be off). The class parses much 
+This is still in beta, but the reported csv data is largely correct (reported energy might be off). The class parses much 
 more data (including individual beam results), but isn't currently in csv nor validated.
 
 

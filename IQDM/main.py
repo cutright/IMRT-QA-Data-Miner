@@ -9,12 +9,21 @@ from os import walk, listdir
 from datetime import datetime
 from .parsers.parser import ReportParser
 from .utilities import DELIMITER
-from .pdf_to_text import convert_pdf_to_txt
 import argparse
 from pathvalidate import sanitize_filename
+import sys
 
 
 CURRENT_VERSION = '0.2.7'
+
+
+def convert_pdf_to_txt(abs_file_path):
+    if sys.version_info[0] < 3:
+        from .pdf_to_text_python2 import convert_pdf_to_txt as func
+        return func(abs_file_path)
+    else:
+        from .pdf_to_text import convert_pdf_to_txt as func
+        return func(abs_file_path)
 
 
 def pdf_to_qa_result(abs_file_path):
