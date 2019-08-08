@@ -1,6 +1,9 @@
 # IMRT-QA-Data-Miner
 Scans a directory for IMRT QA results. Requires python3.
 
+### Quick update
+Stay tuned, working on a more robust method that uses original text coordinates.
+
 ### Install
 ~~~~
 $ pip install IQDM
