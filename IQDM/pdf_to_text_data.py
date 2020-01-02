@@ -22,11 +22,21 @@ class CustomPDFParser:
         self.page = []
         self.file_path = file_path
         self.convert_pdf_to_text(verbose=verbose)
+        self.data = []
 
     def print(self):
         for p, page in enumerate(self.page):
             print("Page %s" % (p+1))
             page.print()
+
+    def print_block(self, page, index):
+        self.page[page].print_block(index)
+
+    def get_block_data(self, page, index):
+        return self.page[page].get_block_data(index)
+
+    def get_block_data_with_y(self, page, y):
+        return self.page[page].get_block_data_with_y(y)
 
     def convert_pdf_to_text(self, verbose=False):
 
@@ -90,7 +100,8 @@ class PDFPageParser:
                     print("%6d, %6d, %s" % (obj.bbox[0], obj.bbox[1], obj.get_text().replace('\n', '_')))
                 self.data['x'].append(round(obj.bbox[0], 2))
                 self.data['y'].append(round(obj.bbox[1], 2))
-                self.data['text'].append(obj.get_text().replace('\n', '_'))
+                # self.data['text'].append(obj.get_text().replace('\n', '_'))
+                self.data['text'].append(obj.get_text())
             # if it's a container, recurse
             elif isinstance(obj, pdfminer.layout.LTFigure):
                 self.parse_obj(obj._objs)
@@ -100,6 +111,7 @@ class PDFPageParser:
 
     def sub_sort_all_data_by_x(self):
         for y in set(self.data['y']):
+            # for a given y, collect all indices, y, and text values with given y
             indices, x, text = [], [], []
             for i, y_ in enumerate(self.data['y']):
                 if y_ == y:
@@ -127,4 +139,24 @@ class PDFPageParser:
     def print(self):
         for index, text in enumerate(self.data['text']):
             coord = self.get_coordinates(index)
-            print("%s\t%s\t%s" % (coord[0], coord[1], text))
+            print("x:%s\ty:%s\n%s" % (coord[0], coord[1], text))
+
+    def print_block(self, index):
+        coord = self.get_coordinates(index)
+        print("x:%s\ty:%s\n%s" % (coord[0], coord[1], (self.data['text'][index])))
+
+    def get_block_data(self, index):
+        coord = self.get_coordinates(index)
+        return coord[0], coord[1], self.data['text'][index]
+
+    def get_block_data_with_y(self, y, exact=False):
+        tolerance = 20
+        block_data = []
+        for i, data in enumerate(self.data['text']):
+            if exact:
+                if int(self.data['y'][i]) == y:
+                    block_data.append(data)
+            else:
+                if y + tolerance > int(self.data['y'][i]) > y - tolerance:
+                    block_data.append(data)
+        return block_data
