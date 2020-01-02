@@ -2,11 +2,12 @@
 Scans a directory for IMRT QA results.
 
 ### Quick update
-Started working on a bokeh dashboard, feel free to try it out, but it's not ready for prime time. ArcCheck coming soon.  
+Started working on a bokeh dashboard, feel free to try it out, but it's not ready for prime time.  
 To try it out, set the file path of your delta4 csv output from IQDM in line 23 of trending_delta4.py
 In a terminal, type:  
 `bokeh serve trending_delta4.py`  
-Then navigate to the link shown.  Must have the python library, bokeh, installed.
+Then navigate to the link shown.  Must have the python library, bokeh, installed.  
+Like-wise for trending_arccheck.py.
 
 <img src="https://user-images.githubusercontent.com/4778878/71692503-ae78e600-2d6f-11ea-9bd6-851d9980972e.png"/>
 
