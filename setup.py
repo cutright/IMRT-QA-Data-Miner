@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 requires = [
     'pdfminer.six',
-    'pdfminer',
+    'pdfminer > 19',
     'numpy',
     'python-dateutil',
     'chardet == 3.0.4',
