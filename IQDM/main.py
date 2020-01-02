@@ -16,7 +16,7 @@ import argparse
 from pathvalidate import sanitize_filename
 
 
-CURRENT_VERSION = '0.2.7'
+CURRENT_VERSION = '0.2.8'
 
 
 def pdf_to_qa_result(abs_file_path):
