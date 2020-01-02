@@ -9,7 +9,7 @@ In a terminal, type:
 Then navigate to the link shown.  Must have the python library, bokeh, installed.  
 Like-wise for trending_arccheck.py.
 
-<img src="https://user-images.githubusercontent.com/4778878/71692503-ae78e600-2d6f-11ea-9bd6-851d9980972e.png"/>
+<img src="https://user-images.githubusercontent.com/4778878/71692503-ae78e600-2d6f-11ea-9bd6-851d9980972e.png" width='400'>
 
 ### Install
 ~~~~
