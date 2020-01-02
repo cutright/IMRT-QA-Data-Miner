@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from ..utilities import get_csv
+from utilities import get_csv
 
 
 class MapcheckReport:
@@ -14,7 +14,7 @@ class MapcheckReport:
         self.columns = ['Patient Name', 'Patient ID', 'Plan Date', 'Dose Type', 'Difference (%)', 'Distance (mm)',
                         'Threshold (%)', 'Meas Uncertainty', 'Analysis Type', 'Total Points', 'Passed', 'Failed',
                         '% Passed']
-        self.identifiers = ['QA File Parameter', 'Threshold', 'Notes', 'Reviewed By :', 'SSD', 'Depth', 'Energy']
+        self.identifiers = ['QA File Parameter', 'Threshold', 'Notes', 'Reviewed By :', 'SSD', 'Depth', 'Energy', 'MapCheck']
         self.text = None
         self.data = {}
 
