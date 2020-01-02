@@ -9,7 +9,10 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
-from io import StringIO
+try:
+    from io import StringIO
+except ImportError:
+    from cStringIO import StringIO  # python 2
 
 
 def convert_pdf_to_txt(path):
