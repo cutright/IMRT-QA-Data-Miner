@@ -33,9 +33,8 @@ def import_csv(file_path):
     keys = [key.strip() for key in keys] + ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
-        if float(row[keys.index('Daily Corr')]) < 1.06:
-            for col, key in enumerate(keys):
-                data[key].append(row[col])
+        for col, key in enumerate(keys):
+            data[key].append(row[col])
 
     sorted_data = {key: [] for key in keys}
     for i in get_sorted_indices(data['Plan Date']):
