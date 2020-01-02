@@ -5,13 +5,14 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from ..utilities import are_all_strings_in_text
-from .mapcheck import MapcheckReport
-from .delta4 import Delta4Report
+from utilities import are_all_strings_in_text
+from parsers.mapcheck import MapcheckReport
+from parsers.delta4 import Delta4Report
+from parsers.arccheck import ArcCheckReport
 
 
 # These classes will be checked in ReportParser.get_report()
-REPORT_CLASSES = [MapcheckReport, Delta4Report]
+REPORT_CLASSES = [MapcheckReport, Delta4Report, ArcCheckReport]
 
 
 class ReportParser:
