@@ -116,6 +116,9 @@ class Delta4Report:
         except:
             pass
 
+        if 'factor' in self.data['Dev'][0]:
+            self.data['Dev'][0] = self.data['Dev'][0].replace('factor', '').strip()
+
         # Daily Correction Factor
         self.index_start['Daily Corr'] = self.get_index_of_next_text_block(self.index_end['Analysis'])
         if 'Det within acceptance' in self.text[self.index_start['Daily Corr']]:
