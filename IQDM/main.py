@@ -9,9 +9,9 @@ from __future__ import print_function
 from os.path import isdir, isfile, join
 from os import walk, listdir
 from datetime import datetime
-from .parsers.parser import ReportParser
-from .utilities import DELIMITER
-from .pdf_to_text import convert_pdf_to_txt
+from parsers.parser import ReportParser
+from utilities import DELIMITER
+from pdf_to_text import convert_pdf_to_txt
 import argparse
 from pathvalidate import sanitize_filename
 
@@ -27,12 +27,7 @@ def pdf_to_qa_result(abs_file_path):
     :rtype: tuple
     """
 
-    try:
-        text = convert_pdf_to_txt(abs_file_path)
-    except Exception as e:
-        print("Non-compatible PDF detected: %s" % abs_file_path)
-        print(str(e))
-        return ''
+    text = convert_pdf_to_txt(abs_file_path)
 
     report_obj = ReportParser(text)
     if report_obj.report is not None:
@@ -81,8 +76,7 @@ def process_file(file_path, output_file, output_dir):
             with open(current_file, "a") as csv:  # write the processed data
                 csv.write(row + '\n')
             print("Processed: %s" % file_path)
-    except Exception as e:  # error likely occurred in pdf_to_qa_result()
-        print("Non-compatible PDF detected: %s" % file_path)
+    except TypeError as e:
         print(str(e))
 
 
