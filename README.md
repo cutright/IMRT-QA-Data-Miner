@@ -1,5 +1,8 @@
 # IMRT-QA-Data-Miner
-Scans a directory for IMRT QA results.
+Scans a directory for IMRT QA results. Requires python3.
+
+### Quick update
+Stay tuned, working on a more robust method that uses original text coordinates.
 
 ### Install
 ~~~~
@@ -23,18 +26,23 @@ positional arguments:
   initial_directory     Scan this directory and all sub-directories
 
 optional arguments:
-  -h, --help            show this help message and exit
+  -h, --help            show this help message and exit  
+                        
   -ie, --ignore-extension
                         Script will check all files, not just ones with .pdf
-                        extensions
+                        extensions  
+                        
   -od OUTPUT_DIR, --output-dir OUTPUT_DIR
                         Output stored in local directory by default, specify
-                        otherwise here
+                        otherwise here  
+                        
   -of OUTPUT_FILE, --output-file OUTPUT_FILE
                         Output will be saved as <report_type>_results_<time-
                         stamp>.csv by default. Define this tag to customize
-                        file name after <report_type>_
-  -ver, --version       Print the IQDM version
+                        file name after <report_type>_  
+                        
+  -ver, --version       Print the IQDM version  
+  
   --no-recursive-search
                         Include this flag to skip sub-directories
 ~~~~
@@ -45,9 +53,9 @@ if someone could provide some anonymized example reports.
 
 ### Vendor Compatibility
 * **[Sun Nuclear](http://sunnuclear.com)**: *SNC Patient*  
-Specifically tested with Mapcheck2 reports, does not currently work with ArcCheck  
+    * ArcCheck compatibility contributed by [Marc Chamberland](https://github.com/mchamberland)
 * **[ScandiDos](http://scandidos.com)**: *Delta4*  
-This is still in beta, but the reported csv data is largely correct (reported energy by be off). The class parses much 
+This is still in beta, but the reported csv data is largely correct (reported energy might be off). The class parses much 
 more data (including individual beam results), but isn't currently in csv nor validated.
 
 

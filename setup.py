@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 
 requires = [
     'pdfminer.six',
+    'pdfminer',
     'numpy',
     'python-dateutil',
     'chardet == 3.0.4',
@@ -12,7 +13,7 @@ setup(
     name='IQDM',
     include_package_data=True,
     packages=find_packages(),
-    version='0.2.7',
+    version='0.2.8',
     description='Scans a directory for IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',
