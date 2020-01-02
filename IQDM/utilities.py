@@ -5,6 +5,9 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
+from os.path import isdir, join
+from os import walk
+import zipfile
 
 DELIMITER = ','  # delimiter for the csv output file for process_files
 ALTERNATE = '^'  # replace the delimiter character with this so not to confuse csv file parsing
@@ -37,3 +40,24 @@ def get_csv(data, columns):
     """
     clean_csv = [str(data[column]).replace(DELIMITER, ALTERNATE) for column in columns]
     return DELIMITER.join(clean_csv)
+
+
+def extract_files_from_zipped_files(init_directory, extract_to_path, extension='.pdf'):
+    """
+    Function to extract .pdf files from zipped files
+    :param init_directory: initial top-level directory to walk through
+    :type init_directory: str
+    :param extract_to_path: directory to extract pdfs into
+    :type extract_to_path: str
+    :param extension: file extension of file type to extract, set to None to extract all files
+    :type extension: str or None
+    """
+    for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
+        for fileName in fileList:
+            if fileName.endswith('.zip'):
+                zip_file_path = join(dirName, fileName)
+                with zipfile.ZipFile(zip_file_path, 'r') as z:
+                    for file_name in z.namelist():
+                        if not isdir(file_name) and (extension is None or file_name.endswith(extension)):
+                            temp_path = join(extract_to_path)
+                            z.extract(file_name, path=temp_path)
