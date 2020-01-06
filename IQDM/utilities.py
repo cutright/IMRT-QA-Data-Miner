@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from os.path import isdir, join
+from os.path import isdir, join, splitext
 from os import walk
 import zipfile
 from datetime import datetime
@@ -61,7 +61,7 @@ def extract_files_from_zipped_files(init_directory, extract_to_path, extension='
                 zip_file_path = join(dirName, fileName)
                 with zipfile.ZipFile(zip_file_path, 'r') as z:
                     for file_name in z.namelist():
-                        if not isdir(file_name) and (extension is None or file_name.endswith(extension)):
+                        if not isdir(file_name) and (extension is None or splitext(file_name)[1].lower == extension):
                             temp_path = join(extract_to_path)
                             z.extract(file_name, path=temp_path)
 
