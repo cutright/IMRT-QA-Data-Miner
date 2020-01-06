@@ -6,7 +6,7 @@ Created on Thu May 30 2019
 """
 
 from __future__ import print_function
-from os.path import isdir, isfile, join
+from os.path import isdir, isfile, join, splitext
 from os import walk, listdir
 from datetime import datetime
 from parsers.parser import ReportParser
@@ -52,14 +52,14 @@ def process_files(init_directory, ignore_extension=False, output_file=None, outp
 
     if no_recursive_search:
         for file_name in listdir(init_directory):
-            if ignore_extension or file_name.endswith('.pdf'):
+            if ignore_extension or splitext(file_name)[1].lower() == '.pdf':
                 file_path = join(init_directory, file_name)
                 process_file(file_path, output_file, output_dir)
     else:
         for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
-            for fileName in fileList:
-                if ignore_extension or fileName.endswith('.pdf'):
-                    file_path = join(dirName, fileName)
+            for file_name in fileList:
+                if ignore_extension or splitext(file_name)[1].lower() == '.pdf':
+                    file_path = join(dirName, file_name)
                     process_file(file_path, output_file, output_dir)
 
 
