@@ -73,7 +73,7 @@ def import_csv(file_path, date_format):
             raw_data.append(line.split(','))
 
     keys = raw_data.pop(0)
-    keys = [key.strip() for key in keys if key] + ['file_name']
+    keys = [key.strip() for key in keys if key.strip()] + ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
         for col, key in enumerate(keys):
