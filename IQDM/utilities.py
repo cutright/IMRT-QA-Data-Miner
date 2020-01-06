@@ -73,7 +73,7 @@ def import_csv(file_path, date_format):
             raw_data.append(line.split(','))
 
     keys = raw_data.pop(0)
-    keys = [key.strip() for key in keys] + ['file_name']
+    keys = [key.strip() for key in keys if key] + ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
         for col, key in enumerate(keys):
@@ -151,7 +151,7 @@ def get_sorted_indices(some_list):
 
 
 def string_to_date_time(date_string, date_format):
-    return datetime.strptime(date_string, date_format)
+    return datetime.strptime(date_string, date_format).date()
 
 
 def get_control_limits(y):
