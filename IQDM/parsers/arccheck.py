@@ -73,14 +73,9 @@ class ArcCheckReport:
         # Gamma Index Summary Block
         try:
             self.text.index('Gamma Index Summary')
-            self.data['gamma_stats'] = 'Gamma Index Summary'
+            self.data['gamma_stats'] = self.get_gamma_statistics('Gamma Index Summary')
         except ValueError:
-            self.data['gamma_stats'] = {'Minimum': 'n/a',
-                                'Maximum': 'n/a',
-                                'Average': 'n/a',
-                                'Stdv': 'n/a'}
-
-        self.data['gamma_stats'] = self.get_gamma_statistics(self.data['gamma_stats'])
+            self.data['gamma_stats'] = {'Minimum': 'n/a', 'Maximum': 'n/a', 'Average': 'n/a',  'Stdv': 'n/a'}
 
         self.data['notes'] = self.text[self.text.index('Notes') + 1]
 
