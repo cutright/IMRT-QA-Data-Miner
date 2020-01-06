@@ -16,119 +16,11 @@ from bokeh.plotting import figure
 from bokeh.models import HoverTool, ColumnDataSource, Select, Div, TextInput, Legend, Spacer
 from bokeh.layouts import column, row
 from bokeh.models.widgets import DatePicker, CheckboxButtonGroup
-from datetime import datetime
 import numpy as np
-import codecs
+from IQDM.utilities import string_to_date_time, collapse_into_single_dates, moving_avg, get_control_limits, import_csv
 
-FILE_PATH = 'arccheck_results_2019-12-31 09-04-33-036588_comp.csv'
-
-
-def import_csv(file_path):
-    with codecs.open(file_path, 'r', encoding='utf-8', errors='ignore') as doc:
-        raw_data = []
-        for line in doc:
-            raw_data.append(line.split(','))
-
-    keys = raw_data.pop(0)
-    keys = [key.strip() for key in keys] + ['file_name']
-    data = {key: [] for key in keys}
-    for row in raw_data:
-        for col, key in enumerate(keys):
-            data[key].append(row[col])
-
-    sorted_data = {key: [] for key in keys}
-
-    to_sort = [string_to_date_time(v) for v in data['Plan Date']]
-
-    for i in get_sorted_indices(to_sort):
-        for key in keys:
-            sorted_data[key].append(data[key][i])
-
-    return sorted_data
-
-
-def collapse_into_single_dates(x, y):
-    """
-    Function used for a time plot to convert multiple values into one value, while retaining enough information
-    to perform a moving average over time
-    :param x: a list of dates in ascending order
-    :param y: a list of values and can use the '+' operator as a function of date
-    :return: a unique list of dates, sum of y for that date, and number of original points for that date
-    :rtype: dict
-    """
-
-    # average daily data and keep track of points per day
-    x_collapsed = [x[0]]
-    y_collapsed = [y[0]]
-    w_collapsed = [1]
-    for n in range(1, len(x)):
-        if x[n] == x_collapsed[-1]:
-            y_collapsed[-1] = (y_collapsed[-1] + y[n])
-            w_collapsed[-1] += 1
-        else:
-            x_collapsed.append(x[n])
-            y_collapsed.append(y[n])
-            w_collapsed.append(1)
-
-    return {'x': x_collapsed, 'y': y_collapsed, 'w': w_collapsed}
-
-
-def moving_avg(xyw, avg_len):
-    """
-    Calculate a moving average for a given averaging length
-    :param xyw: output from collapse_into_single_dates
-    :type xyw: dict
-    :param avg_len: average of these number of points, i.e., look-back window
-    :type avg_len: int
-    :return: list of x values, list of y values
-    :rtype: tuple
-    """
-    cumsum, moving_aves, x_final = [0], [], []
-
-    for i, y in enumerate(xyw['y'], 1):
-        cumsum.append(cumsum[i - 1] + y / xyw['w'][i - 1])
-        if i >= avg_len:
-            moving_ave = (cumsum[i] - cumsum[i - avg_len]) / avg_len
-            moving_aves.append(moving_ave)
-    x_final = [xyw['x'][i] for i in range(avg_len - 1, len(xyw['x']))]
-
-    return x_final, moving_aves
-
-
-def get_sorted_indices(some_list):
-    try:
-        return [i[0] for i in sorted(enumerate(some_list), key=lambda x: x[1])]
-    except TypeError:  # can't sort if a mix of str and float
-        try:
-            temp_data = [[value, -float('inf')][value == 'None'] for value in some_list]
-            return [i[0] for i in sorted(enumerate(temp_data), key=lambda x: x[1])]
-        except TypeError:
-            temp_data = [str(value) for value in some_list]
-            return [i[0] for i in sorted(enumerate(temp_data), key=lambda x: x[1])]
-
-
-def string_to_date_time(date_string):
-    return datetime.strptime(date_string, '%m/%d/%Y').date()
-
-
-def get_control_limits(y):
-    """
-    Calculate control limits for Control Chart
-    :param y: data
-    :type y: list
-    :return: center line, upper control limit, and lower control limit
-    """
-    y = np.array(y)
-
-    center_line = np.mean(y)
-    avg_moving_range = np.mean(np.absolute(np.diff(y)))
-
-    scalar_d = 1.128
-
-    ucl = center_line + 3 * avg_moving_range / scalar_d
-    lcl = center_line - 3 * avg_moving_range / scalar_d
-
-    return center_line, ucl, lcl
+FILE_PATH = r'results\arccheck_results_2019-12-31 09-04-33-036588_comp.csv'
+DATE_FORMAT = '%m/%d/%Y'
 
 
 class Plot:
@@ -173,7 +65,7 @@ class Plot:
         self.fig.title.align = 'center'
 
     def __set_x(self):
-        self.x = [string_to_date_time(d) for d in self.data['Plan Date']]
+        self.x = [string_to_date_time(d, DATE_FORMAT) for d in self.data['Plan Date']]
 
     def __add_plot_data(self):
         self.plot_data_1 = self.fig.circle('x', 'y', source=self.source[1]['plot'], color='blue', size=8, alpha=0.4)
@@ -425,7 +317,7 @@ class PlotControlChart:
         self.div_lcl.text = "<b>LCL</b>:"
 
 
-data = import_csv(FILE_PATH)
+data = import_csv(FILE_PATH, DATE_FORMAT)
 plot = Plot(data)
 ichart = PlotControlChart(plot)
 plot.ichart = ichart
