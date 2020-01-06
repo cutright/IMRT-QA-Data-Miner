@@ -108,7 +108,7 @@ def get_sorted_indices(some_list):
 
 
 def string_to_date_time(date_string):
-    return datetime.strptime(date_string, '%m/%d/%Y')
+    return datetime.strptime(date_string, '%m/%d/%Y').date()
 
 
 def get_control_limits(y):
