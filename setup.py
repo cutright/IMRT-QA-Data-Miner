@@ -6,7 +6,8 @@ requires = [
     'numpy',
     'python-dateutil',
     'chardet == 3.0.4',
-    'pathvalidate'
+    'pathvalidate',
+    'bokeh'
 ]
 
 setup(
