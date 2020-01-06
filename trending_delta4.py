@@ -25,6 +25,7 @@ COLORS = {1: 'blue', 2: 'red'}
 # DATE_FORMAT = '%m/%d/%Y'
 DATE_FORMAT = '%Y-%m-%d'
 
+# TODO: Generalize for different parsers
 MAIN_PLOT_KEYS = ['x', 'y', 'id', 'gamma_crit', 'file_name', 'gamma_index', 'daily_corr', 'dta']
 
 
@@ -202,14 +203,15 @@ class TrendingDashboard:
         linacs.sort()
         linacs.insert(0, 'All')
         linacs.append('None')
-        self.select_linac = {key: Select(title='Linac %s:' % key, value='All', options=linacs, width=250) for key in [1, 2]}
+        self.select_linac = {grp: Select(title='Linac %s:' % grp, value='All', options=linacs, width=250)
+                             for grp in GROUPS}
         self.select_linac[2].value = 'None'
 
         energies = list(set(self.data['Energy']))
         energies.sort()
         energies.insert(0, 'Any')
-        self.select_energies = {key: Select(title='Energy %s:' % key, value='Any', options=energies, width=250) for key in
-                           [1, 2]}
+        self.select_energies = {grp: Select(title='Energy %s:' % grp, value='Any', options=energies, width=250)
+                                for grp in GROUPS}
 
         self.avg_len_input = TextInput(title='Avg. Len:', value='10', width=100)
 
@@ -237,9 +239,9 @@ class TrendingDashboard:
         self.checkbox_button_group.on_change('active', self.update_source_ticker)
 
     def __do_layout(self):
+        # TODO: Generalize for 1 or 2 groups
         self.layout = column(row(self.select_y, self.select_linac[1], self.select_linac[2], self.avg_len_input,
                                  self.percentile_input, self.bins_input),
-                             # row(select_energies[1], select_energies[2]),
                              row(self.select_energies[1], self.select_energies[2]),
                              row(self.start_date_picker, self.end_date_picker),
                              row(Div(text='Gamma Criteria: '), self.checkbox_button_group),
@@ -262,7 +264,8 @@ class TrendingDashboard:
             active_gamma = [self.gamma_options[a] for a in self.checkbox_button_group.active]
             if self.select_linac[grp] != 'None':
                 for i in range(len(self.x)):
-                    if self.select_linac[grp].value == 'All' or self.data['Radiation Dev'][i] == self.select_linac[grp].value:
+                    if self.select_linac[grp].value == 'All' or \
+                            self.data['Radiation Dev'][i] == self.select_linac[grp].value:
                         if self.end_date_picker.value > self.x[i] > self.start_date_picker.value:
                             gamma_crit = "%s%%/%smm" % (self.data['Gamma Dose Criteria'][i],
                                                         self.data['Gamma Dist Criteria'][i])

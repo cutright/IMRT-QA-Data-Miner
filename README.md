@@ -3,7 +3,7 @@ Scans a directory for IMRT QA results.
 
 ### Quick update
 Started working on a bokeh dashboard, feel free to try it out, but it's not ready for prime time.  
-To try it out, set the file path of your delta4 csv output from IQDM in line 23 of trending_delta4.py
+To try it out, set the file path of your delta4 csv output from IQDM in line 22 of trending_delta4.py
 In a terminal, type:  
 `bokeh serve trending_delta4.py`  
 Then navigate to the link shown.  Must have the python library, bokeh, installed.  

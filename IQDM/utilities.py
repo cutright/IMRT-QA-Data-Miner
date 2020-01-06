@@ -151,6 +151,7 @@ def get_sorted_indices(some_list):
 
 
 def string_to_date_time(date_string, date_format):
+    # TODO: Use dateutil.parser.parse() instead
     return datetime.strptime(date_string, date_format).date()
 
 
