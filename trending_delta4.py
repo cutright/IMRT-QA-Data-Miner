@@ -30,7 +30,11 @@ def import_csv(file_path):
             raw_data.append(line.split(','))
 
     keys = raw_data.pop(0)
-    keys = [key.strip() for key in keys] + ['file_name']
+    keys = [key.strip() for key in keys]
+    if not keys[-1]:
+        keys[-1] = 'file_name'
+    else:
+        keys += ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
         for col, key in enumerate(keys):
