@@ -13,7 +13,7 @@ import re
 class SNCPatientReport:
     def __init__(self):
         self.report_type = 'sncpatient'
-        self.columns = ['Patient Last Name', 'Patient First Name', 'Patient ID', 'Plan Date', 'Dose Type', 'Difference (%)', 'Distance (mm)',
+        self.columns = ['Patient Last Name', 'Patient First Name', 'Patient ID', 'Plan Date', 'Energy', 'Angle', 'Dose Type', 'Difference (%)', 'Distance (mm)',
                         'Threshold (%)', 'Meas Uncertainty', 'Analysis Type', 'Total Points', 'Passed', 'Failed',
                         '% Passed', 'Min', 'Max', 'Average', 'Std Dev', 'X offset (mm)', 'Y offset (mm)', 'Notes']
         self.identifiers = ['QA File Parameter', 'Threshold', 'Notes', 'Reviewed By :', 'SSD', 'Depth', 'Energy']
@@ -136,6 +136,8 @@ class SNCPatientReport:
                 'Patient First Name': first_name,
                 'Patient ID': self.data['qa_file_parameter']['Patient ID'],
                 'Plan Date': self.data['qa_file_parameter']['Plan Date'],
+                'Energy': self.data['qa_file_parameter']['Energy'],
+                'Angle': self.data['qa_file_parameter']['Angle'],
                 'Dose Type': self.data['dose_comparison_type'],
                 'Difference (%)': self.data['dose_comparison']['Difference (%)'],
                 'Distance (mm)': self.data['dose_comparison']['Distance (mm)'],
