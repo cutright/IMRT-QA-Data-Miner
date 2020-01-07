@@ -17,23 +17,20 @@ from bokeh.models import HoverTool, ColumnDataSource, Select, Div, TextInput, Le
 from bokeh.layouts import column, row
 from bokeh.models.widgets import DatePicker, CheckboxButtonGroup
 import numpy as np
-from IQDM.utilities import string_to_date_time, collapse_into_single_dates, moving_avg, get_control_limits, import_csv
+from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_limits, import_csv
 
 FILE_PATH = r'results\delta4_results_2020-01-02 12-22-20-554312.csv'  # UPDATE this for you, may need absolute path
 GROUPS = [1, 2]
 COLORS = {1: 'blue', 2: 'red'}
-# DATE_FORMAT = '%m/%d/%Y'
-DATE_FORMAT = '%Y-%m-%d'
 
 # TODO: Generalize for different parsers
 MAIN_PLOT_KEYS = ['x', 'y', 'id', 'gamma_crit', 'file_name', 'gamma_index', 'daily_corr', 'dta']
 
 
 class TrendingDashboard:
-    def __init__(self, file_path, date_format):
+    def __init__(self, file_path):
 
-        self.data = import_csv(file_path, date_format)
-        self.date_format = date_format
+        self.data = import_csv(file_path)
 
         self.__create_sources()
         self.__set_x()
@@ -69,7 +66,7 @@ class TrendingDashboard:
                                     'patch': ColumnDataSource(data=dict(x=[], y=[]))} for grp in GROUPS}
 
     def __set_x(self):
-        self.x = [string_to_date_time(d, date_format=self.date_format) for d in self.data['Plan Date']]
+        self.x = self.data['date_time_obj']
 
     def __create_figures(self):
 
@@ -195,7 +192,7 @@ class TrendingDashboard:
         self.div_lcl = {grp: Div(text='', width=175) for grp in GROUPS}
 
     def __create_widgets(self):
-        ignored_y = ['Patient Name', 'Patient ID', 'Plan Date', 'Radiation Dev', 'Energy', 'file_name']
+        ignored_y = ['Patient Name', 'Patient ID', 'Plan Date', 'Radiation Dev', 'Energy', 'file_name', 'date_time_obj']
         y_options = [option for option in list(self.data) if option not in ignored_y]
         self.select_y = Select(title='Y-variable:', value='Dose Dev', options=y_options)
 
@@ -400,6 +397,6 @@ class TrendingDashboard:
                 self.div_lcl[grp].text = "<b>LCL</b>:"
 
 
-dashboard = TrendingDashboard(FILE_PATH, DATE_FORMAT)
+dashboard = TrendingDashboard(FILE_PATH)
 curdoc().add_root(dashboard.layout)
 curdoc().title = "Delta 4 Trending"
