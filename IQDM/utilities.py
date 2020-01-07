@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from os.path import isdir, join, splitext
+from os.path import isdir, join, splitext, basename, normpath
 from os import walk, listdir
 import zipfile
 from datetime import datetime
@@ -49,13 +49,14 @@ def get_csv(data, columns):
     return DELIMITER.join(clean_csv)
 
 
-def import_csv(file_path):
+def load_csv_file(file_path):
     with codecs.open(file_path, 'r', encoding='utf-8', errors='ignore') as doc:
-        raw_data = []
-        for line in doc:
-            raw_data.append(line.split(','))
+        return [line.split(',') for line in doc]
 
-    keys = raw_data.pop(0)
+
+def import_csv(file_path):
+    raw_data = load_csv_file(file_path)
+    keys = raw_data.pop(0)  # remove column header row
     keys = [key.strip() for key in keys if key.strip()] + ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
@@ -73,6 +74,18 @@ def import_csv(file_path):
         sorted_data['date_time_obj'].append(date_time_objs[i])
 
     return sorted_data
+
+
+def get_file_names_from_csv_file(file_path):
+    raw_data = load_csv_file(file_path)
+    column_headers = raw_data.pop(0)  # remove column header row
+    fp_start = len(column_headers)
+    file_names = []
+    for row in raw_data:
+        file_name_fields = [value for value in row[fp_start:]]
+        file_name = ','.join(file_name_fields)
+        file_names.append(normpath(file_name.strip()))
+    return file_names
 
 
 #############################################################
@@ -244,3 +257,35 @@ def process_result_csvs(file_list, results, directory_name=None):
             except:
                 continue
 
+
+def get_processed_files(init_directory, no_recursive_search=False):
+    processed = []
+    if no_recursive_search:
+        get_file_names_from_result_csvs(listdir(init_directory), processed)
+    else:
+        for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
+            get_file_names_from_result_csvs(fileList, processed, directory_name=dirName)
+    return list(set(processed))
+
+
+def get_file_names_from_result_csvs(file_list, processed, directory_name=None):
+    for file_name in file_list:
+        fn = splitext(file_name)[0].lower()
+        ext = splitext(file_name)[1].lower()
+        if ext == '.csv' and '_results_' in fn:
+            if directory_name is None:
+                file_path = file_name
+            else:
+                file_path = join(directory_name, file_name)
+            try:
+                file_names = get_file_names_from_csv_file(file_path)
+                processed.extend(file_names)
+            except:
+                continue
+
+
+def is_file_name_found_in_processed_files(file_name, directory, processed_files):
+    for processed_file in processed_files:
+        if normpath(file_name) in processed_file or normpath(join(directory, file_name)) in processed_files:
+            return True
+    return False
