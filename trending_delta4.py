@@ -272,8 +272,12 @@ class TrendingDashboard:
                             if 'Any' in active_gamma or gamma_crit in active_gamma:
                                 if 'Any' == self.select_energies[grp].value or \
                                         self.data['Energy'][i] == self.select_energies[grp].value:
+
+                                    try:
+                                        new_data['y'].append(float(self.data[self.select_y.value][i]))
+                                    except ValueError:
+                                        continue
                                     new_data['x'].append(self.x[i])
-                                    new_data['y'].append(float(self.data[self.select_y.value][i]))
                                     new_data['id'].append(self.data['Patient ID'][i])
                                     new_data['gamma_crit'].append(gamma_crit)
                                     new_data['file_name'].append(self.data['file_name'][i])

@@ -120,8 +120,12 @@ class Plot:
                 if end_date_picker.value > self.x[i] > start_date_picker.value:
                     gamma_crit = "%s%%/%smm" % (self.data['Difference (%)'][i], self.data['Distance (mm)'][i])
                     if 'Any' in active_gamma or gamma_crit in active_gamma:
+                        try:
+                            new_data['y'].append(float(self.data[select_y.value][i]))
+                        except ValueError:
+                            continue
+
                         new_data['x'].append(self.x[i])
-                        new_data['y'].append(float(self.data[select_y.value][i]))
                         new_data['id'].append(self.data['Patient ID'][i])
                         new_data['gamma_crit'].append(gamma_crit)
                         new_data['file_name'].append(self.data['file_name'][i])
