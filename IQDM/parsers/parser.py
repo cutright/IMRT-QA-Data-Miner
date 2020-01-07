@@ -6,13 +6,11 @@ Created on Thu May 30 2019
 """
 
 from utilities import are_all_strings_in_text
-from parsers.mapcheck import MapcheckReport
 from parsers.delta4 import Delta4Report
-from parsers.arccheck import ArcCheckReport
-
+from parsers.sncpatient import SNCPatientReport
 
 # These classes will be checked in ReportParser.get_report()
-REPORT_CLASSES = [MapcheckReport, Delta4Report, ArcCheckReport]
+REPORT_CLASSES = [Delta4Report, SNCPatientReport]
 
 
 class ReportParser:
