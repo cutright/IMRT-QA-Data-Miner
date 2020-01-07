@@ -9,6 +9,7 @@ from os.path import isdir, join, splitext
 from os import walk
 import zipfile
 from datetime import datetime
+from dateutil.parser import parse as date_parser
 import numpy as np
 import codecs
 
@@ -66,7 +67,7 @@ def extract_files_from_zipped_files(init_directory, extract_to_path, extension='
                             z.extract(file_name, path=temp_path)
 
 
-def import_csv(file_path, date_format):
+def import_csv(file_path):
     with codecs.open(file_path, 'r', encoding='utf-8', errors='ignore') as doc:
         raw_data = []
         for line in doc:
@@ -80,12 +81,14 @@ def import_csv(file_path, date_format):
             data[key].append(row[col])
 
     sorted_data = {key: [] for key in keys}
+    sorted_data['date_time_obj'] = []
 
-    to_sort = [string_to_date_time(v, date_format) for v in data['Plan Date']]
+    date_time_objs = get_date_times(data)
 
-    for i in get_sorted_indices(to_sort):
+    for i in get_sorted_indices(date_time_objs):
         for key in keys:
             sorted_data[key].append(data[key][i])
+        sorted_data['date_time_obj'].append(date_time_objs[i])
 
     return sorted_data
 
@@ -150,9 +153,17 @@ def get_sorted_indices(some_list):
             return [i[0] for i in sorted(enumerate(temp_data), key=lambda x: x[1])]
 
 
-def string_to_date_time(date_string, date_format):
-    # TODO: Use dateutil.parser.parse() instead
-    return datetime.strptime(date_string, date_format).date()
+def get_date_times(data, datetime_key='Plan Date', row_id_key='Patient ID'):
+    dates = []
+    for i, date_str in enumerate(data[datetime_key]):
+        try:
+            dates.append(date_parser(date_str).date())
+        except ValueError:
+            print('ERROR: Could not parse the following into a date: %s' % date_str)
+            print("\tPatient ID: %s" % data[row_id_key][i])
+            print("\tUsing today's date instead")
+            dates.append(datetime.today().date())
+    return dates
 
 
 def get_control_limits(y):

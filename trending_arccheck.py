@@ -17,10 +17,9 @@ from bokeh.models import HoverTool, ColumnDataSource, Select, Div, TextInput, Le
 from bokeh.layouts import column, row
 from bokeh.models.widgets import DatePicker, CheckboxButtonGroup
 import numpy as np
-from IQDM.utilities import string_to_date_time, collapse_into_single_dates, moving_avg, get_control_limits, import_csv
+from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_limits, import_csv
 
 FILE_PATH = r'results\arccheck_results_2019-12-31 09-04-33-036588_comp.csv'
-DATE_FORMAT = '%m/%d/%Y'
 
 
 class Plot:
@@ -65,7 +64,7 @@ class Plot:
         self.fig.title.align = 'center'
 
     def __set_x(self):
-        self.x = [string_to_date_time(d, DATE_FORMAT) for d in self.data['Plan Date']]
+        self.x = self.data['date_time_obj']
 
     def __add_plot_data(self):
         self.plot_data_1 = self.fig.circle('x', 'y', source=self.source[1]['plot'], color='blue', size=8, alpha=0.4)
@@ -321,7 +320,7 @@ class PlotControlChart:
         self.div_lcl.text = "<b>LCL</b>:"
 
 
-data = import_csv(FILE_PATH, DATE_FORMAT)
+data = import_csv(FILE_PATH)
 plot = Plot(data)
 ichart = PlotControlChart(plot)
 plot.ichart = ichart
