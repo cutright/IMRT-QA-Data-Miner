@@ -45,6 +45,10 @@ def process_files(init_directory, ignore_extension=False, output_file=None, outp
     :param output_dir: user specified output directory, default value is to local directory
     :param no_recursive_search: to ignore sub-directories, set to True
     :type no_recursive_search: bool
+    :param process_all: Only process files found in results csv files in the local directory or the specified results_dir
+    :type process_all: bool
+    :param results_dir: directory containing results files
+    :type results_dir: str
     """
 
     if process_all:
