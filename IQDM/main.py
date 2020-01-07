@@ -66,18 +66,21 @@ def process_files(init_directory, ignore_extension=False, output_file=None, outp
 def process_file(file_path, output_file, output_dir):
     try:
         row, report_type, columns = pdf_to_qa_result(file_path)  # process file
-        current_file = "%s_%s" % (report_type, output_file)  # prepend report type to file name
-        if output_dir:
-            current_file = join(output_dir, current_file)
-        if row:
-            if not isfile(current_file):  # if file doesn't exist, need to write columns
-                with open(current_file, 'w') as csv:
-                    csv.write(DELIMITER.join(columns) + '\n')
-            with open(current_file, "a") as csv:  # write the processed data
-                csv.write(row + '\n')
-            print("Processed: %s" % file_path)
-    except TypeError as e:
+    except Exception as e:
         print(str(e))
+        print('Skipping: %s' % file_path)
+        return
+        
+    current_file = "%s_%s" % (report_type, output_file)  # prepend report type to file name
+    if output_dir:
+        current_file = join(output_dir, current_file)
+    if row:
+        if not isfile(current_file):  # if file doesn't exist, need to write columns
+            with open(current_file, 'w') as csv:
+                csv.write(DELIMITER.join(columns) + '\n')
+        with open(current_file, "a") as csv:  # write the processed data
+            csv.write(row + '\n')
+        print("Processed: %s" % file_path)
 
 
 def main():
