@@ -199,7 +199,7 @@ def extract_files_from_zipped_files(init_directory, extract_to_path, extension='
     """
     for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
         for fileName in fileList:
-            if fileName.endswith('.zip'):
+            if splitext(fileName)[1].lower == '.zip':
                 zip_file_path = join(dirName, fileName)
                 with zipfile.ZipFile(zip_file_path, 'r') as z:
                     for file_name in z.namelist():
