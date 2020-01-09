@@ -9,14 +9,14 @@ from __future__ import print_function
 from os.path import isdir, isfile, join, splitext
 from os import walk, listdir
 from datetime import datetime
-from parsers.parser import ReportParser
-from utilities import DELIMITER
-from pdf_to_text import convert_pdf_to_txt
+from IQDM.parsers.parser import ReportParser
+from IQDM.utilities import DELIMITER
+from IQDM.pdf_to_text import convert_pdf_to_txt
 import argparse
 from pathvalidate import sanitize_filename
 
 
-CURRENT_VERSION = '0.2.8'
+CURRENT_VERSION = '0.3rc'
 
 
 def pdf_to_qa_result(abs_file_path):
@@ -105,7 +105,7 @@ def main():
                             help='Print the IQDM version',
                             default=False,
                             action='store_true')
-    cmd_parser.add_argument('--no-recursive-search',
+    cmd_parser.add_argument('-nr', '--no-recursive-search',
                             dest='no_recursive_search',
                             help='Include this flag to skip sub-directories',
                             default=False,
