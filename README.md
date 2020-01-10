@@ -50,7 +50,7 @@ optional arguments:
                         
   -ver, --version       Print the IQDM version  
   
-  --no-recursive-search
+  -nr, --no-recursive-search
                         Include this flag to skip sub-directories
 ~~~~
 

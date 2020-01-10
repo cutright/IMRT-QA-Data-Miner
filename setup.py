@@ -7,14 +7,16 @@ requires = [
     'python-dateutil',
     'chardet == 3.0.4',
     'pathvalidate',
-    'bokeh'
+    'bokeh',
+    'python-dateutil',
+    'pathvalidate'
 ]
 
 setup(
     name='IQDM',
     include_package_data=True,
     packages=find_packages(),
-    version='0.2.9',
+    version='0.3.1dev',
     description='Scans a directory for IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',

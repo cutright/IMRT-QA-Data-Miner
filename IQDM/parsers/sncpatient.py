@@ -6,7 +6,7 @@ Created on Fri Jun 21 2019
 @contributor: Marc J.P. Chamberland, PhD
 """
 
-from utilities import get_csv
+from IQDM.utilities import get_csv
 import re
 
 

@@ -5,9 +5,9 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from utilities import are_all_strings_in_text
-from parsers.delta4 import Delta4Report
-from parsers.sncpatient import SNCPatientReport
+from IQDM.utilities import are_all_strings_in_text
+from IQDM.parsers.delta4 import Delta4Report
+from IQDM.parsers.sncpatient import SNCPatientReport
 
 # These classes will be checked in ReportParser.get_report()
 REPORT_CLASSES = [Delta4Report, SNCPatientReport]
