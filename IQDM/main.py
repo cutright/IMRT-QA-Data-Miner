@@ -160,7 +160,7 @@ def main():
         if isfile(path) and splitext(path)[1].lower() == '.csv':
             if basename(path).startswith('delta4_results_'):
                 trend_path = join(SCRIPT_DIR, 'trending.py')
-            elif basename(path).startswith('snc_patient_'):
+            elif basename(path).startswith('sncpatient_results_'):
                 trend_path = join(SCRIPT_DIR, 'trending_arccheck.py')
             else:
                 print('Did you provide an IQDM results csv?')
