@@ -6,17 +6,20 @@ Created on Thu May 30 2019
 """
 
 from __future__ import print_function
-from os.path import isdir, isfile, join, splitext
+from os.path import isdir, isfile, join, splitext, basename, dirname
 from os import walk, listdir
 from datetime import datetime
 from IQDM.parsers.parser import ReportParser
-from IQDM.utilities import DELIMITER
+from IQDM.utilities import DELIMITER, is_file_name_found_in_processed_files, get_processed_files
 from IQDM.pdf_to_text import convert_pdf_to_txt
 import argparse
 from pathvalidate import sanitize_filename
+import subprocess
 
 
 CURRENT_VERSION = '0.3.1dev'
+
+SCRIPT_DIR = dirname(__file__)
 
 
 def pdf_to_qa_result(abs_file_path):
@@ -136,15 +139,16 @@ def main():
                             help='Include this flag to skip sub-directories',
                             default=False,
                             action='store_true')
-    cmd_parser.add_argument('initial_directory', nargs='?',
-                            help='Scan this directory and all sub-directories')
+    cmd_parser.add_argument('file_path', nargs='?',
+                            help='Initiate scan if directory, launch dashboard if results file')
     args = cmd_parser.parse_args()
 
-    # if args.initial_directory and len(args.initial_directory) > 2:
+    # if args.file_path and len(args.file_path) > 2:
     #     print("Too many arguments provided. Please only provide the initial scanning directory after IQDM")
     #     return
 
-    if not args.initial_directory or len(args.initial_directory) < 2:
+    path = args.file_path
+    if not path or len(path) < 2:
         if args.print_version:
             print('IMRT-QA-Data-Miner: IQDM v%s' % CURRENT_VERSION)
             return
@@ -152,8 +156,22 @@ def main():
             print('Initial directory not provided!')
             return
 
-    if not isdir(args.initial_directory):
-        print("%s is not a valid or accessible directory" % args.initial_directory)
+    if not isdir(path):
+        if isfile(path) and splitext(path)[1].lower() == '.csv':
+            if basename(path).startswith('delta4_results_'):
+                trend_path = join(SCRIPT_DIR, 'trending.py')
+            elif basename(path).startswith('snc_patient_'):
+                trend_path = join(SCRIPT_DIR, 'trending_arccheck.py')
+            else:
+                print('Did you provide an IQDM results csv?')
+                return
+            try:
+                subprocess.run(['bokeh', 'serve', trend_path, '--args', path])
+            except KeyboardInterrupt:
+                pass
+
+        else:
+            print("%s is not a valid or accessible directory" % path)
         return
 
     output_file, print_file_name_change = None, False
@@ -162,7 +180,7 @@ def main():
         if output_file not in args.output_file:
             print_file_name_change = True
 
-    process_files(args.initial_directory,
+    process_files(args.file_path,
                   ignore_extension=args.ignore_extension,
                   output_file=output_file,
                   output_dir=args.output_dir,

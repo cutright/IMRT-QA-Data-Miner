@@ -18,8 +18,9 @@ from bokeh.layouts import column, row
 from bokeh.models.widgets import DatePicker, CheckboxButtonGroup
 import numpy as np
 from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_limits, import_csv
+import sys
 
-FILE_PATH = r'results\arccheck_results_2019-12-31 09-04-33-036588_comp.csv'
+FILE_PATH = sys.argv[1]
 
 
 class Plot:

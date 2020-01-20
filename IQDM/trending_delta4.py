@@ -11,7 +11,6 @@ Bokeh server script to analyze a delta4_results csv from IQDM
 # University of Chicago Medical Center
 # This file is part of IMRT QA Data Miner, partial based on code from DVH Analytics
 
-from bokeh.io import curdoc
 from bokeh.plotting import figure
 from bokeh.models import HoverTool, ColumnDataSource, Select, Div, TextInput, Legend, Spacer
 from bokeh.layouts import column, row
@@ -399,8 +398,3 @@ class TrendingDashboard:
                 self.div_center_line[grp].text = "<b>Center line</b>:"
                 self.div_ucl[grp].text = "<b>UCL</b>:"
                 self.div_lcl[grp].text = "<b>LCL</b>:"
-
-
-dashboard = TrendingDashboard(FILE_PATH)
-curdoc().add_root(dashboard.layout)
-curdoc().title = "Delta 4 Trending"
