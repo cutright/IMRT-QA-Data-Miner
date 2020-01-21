@@ -18,7 +18,6 @@ from bokeh.models.widgets import DatePicker, CheckboxButtonGroup
 import numpy as np
 from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_limits, import_csv
 
-FILE_PATH = r'results\delta4_results_2020-01-02 12-22-20-554312.csv'  # UPDATE this for you, may need absolute path
 GROUPS = [1, 2]
 COLORS = {1: 'blue', 2: 'red'}
 

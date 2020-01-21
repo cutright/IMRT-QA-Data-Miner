@@ -254,7 +254,7 @@ def process_result_csvs(file_list, results, directory_name=None):
                     else:
                         file_path = join(directory_name, file_name)
                     results[report_type] = {'time_stamp': time_stamp, 'file_path': file_path}
-            except:
+            except Exception:
                 continue
 
 
@@ -280,7 +280,7 @@ def get_file_names_from_result_csvs(file_list, processed, directory_name=None):
             try:
                 file_names = get_file_names_from_csv_file(file_path)
                 processed.extend(file_names)
-            except:
+            except Exception:
                 continue
 
 
