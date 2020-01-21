@@ -27,9 +27,9 @@ MAIN_PLOT_KEYS = ['x', 'y', 'id', 'gamma_crit', 'file_name', 'gamma_index', 'dai
 
 
 class TrendingDashboard:
-    def __init__(self, file_path):
+    def __init__(self, file_path, day_first=False):
 
-        self.data = import_csv(file_path)
+        self.data = import_csv(file_path, day_first=day_first)
 
         self.__create_sources()
         self.__set_x()

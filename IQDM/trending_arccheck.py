@@ -21,6 +21,7 @@ from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_l
 import sys
 
 FILE_PATH = sys.argv[1]
+DAY_FIRST = day_first = {'true': True, 'false': False}[sys.argv[2]]
 
 
 class Plot:
@@ -321,7 +322,7 @@ class PlotControlChart:
         self.div_lcl.text = "<b>LCL</b>:"
 
 
-data = import_csv(FILE_PATH)
+data = import_csv(FILE_PATH, day_first=DAY_FIRST)
 plot = Plot(data)
 ichart = PlotControlChart(plot)
 plot.ichart = ichart

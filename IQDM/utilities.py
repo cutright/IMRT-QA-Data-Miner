@@ -5,7 +5,7 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from os.path import isdir, join, splitext, basename, normpath
+from os.path import isdir, join, splitext, normpath
 from os import walk, listdir
 import zipfile
 from datetime import datetime
@@ -54,7 +54,7 @@ def load_csv_file(file_path):
         return [line.split(',') for line in doc]
 
 
-def import_csv(file_path):
+def import_csv(file_path, day_first=False):
     raw_data = load_csv_file(file_path)
     keys = raw_data.pop(0)  # remove column header row
     keys = [key.strip() for key in keys if key.strip()] + ['file_name']
@@ -66,7 +66,7 @@ def import_csv(file_path):
     sorted_data = {key: [] for key in keys}
     sorted_data['date_time_obj'] = []
 
-    date_time_objs = get_date_times(data)
+    date_time_objs = get_date_times(data, day_first=day_first)
 
     for i in get_sorted_indices(date_time_objs):
         for key in keys:
@@ -151,11 +151,11 @@ def get_sorted_indices(some_list):
             return [i[0] for i in sorted(enumerate(temp_data), key=lambda x: x[1])]
 
 
-def get_date_times(data, datetime_key='Plan Date', row_id_key='Patient ID'):
+def get_date_times(data, datetime_key='Plan Date', row_id_key='Patient ID', day_first=False):
     dates = []
     for i, date_str in enumerate(data[datetime_key]):
         try:
-            dates.append(date_parser(date_str).date())
+            dates.append(date_parser(date_str, dayfirst=day_first).date())
         except ValueError:
             print('ERROR: Could not parse the following into a date: %s' % date_str)
             print("\tPatient ID: %s" % data[row_id_key][i])

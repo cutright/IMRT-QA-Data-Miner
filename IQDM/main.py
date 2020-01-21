@@ -139,6 +139,11 @@ def main():
                             help='Include this flag to skip sub-directories',
                             default=False,
                             action='store_true')
+    cmd_parser.add_argument('-df', '--day-first',
+                            dest='day_first',
+                            help='Assume day first for ambiguous dates in trending dashboard',
+                            default=False,
+                            action='store_true')
     cmd_parser.add_argument('file_path', nargs='?',
                             help='Initiate scan if directory, launch dashboard if results file')
     args = cmd_parser.parse_args()
@@ -153,7 +158,7 @@ def main():
             print('IMRT-QA-Data-Miner: IQDM v%s' % CURRENT_VERSION)
             return
         else:
-            print('Initial directory not provided!')
+            print('Initial directory or results file for trending not provided!')
             return
 
     if not isdir(path):
@@ -166,7 +171,8 @@ def main():
                 print('Did you provide an IQDM results csv?')
                 return
             try:
-                subprocess.run(['bokeh', 'serve', trend_path, '--args', path])
+                day_first = ['false', 'true'][args.day_first]
+                subprocess.run(['bokeh', 'serve', trend_path, '--args', path, day_first])
             except KeyboardInterrupt:
                 pass
 
