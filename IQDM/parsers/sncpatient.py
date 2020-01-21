@@ -22,6 +22,8 @@ class SNCPatientReport:
 
     def process_data(self, text_data):
         self.text = text_data.split('\n')
+        with open('test.txt', 'w') as doc:
+            doc.write(text_data)
         self.data['date'], self.data['hospital'] = [], []
         for row in self.text:
             if row.find('Date: ') > -1:
@@ -32,7 +34,7 @@ class SNCPatientReport:
             if self.data['date'] and self.data['hospital']:
                 break
 
-        self.data['qa_file_parameter'] = self.get_group_results('QA File Parameter')
+        self.data['qa_file_parameter'] = self.get_group_qa_parameters('QA File Parameter')
 
         x_offset = '0'
         y_offset = '0'
@@ -52,7 +54,8 @@ class SNCPatientReport:
             self.data['dose_comparison_type'] = 'Absolute Dose Comparison'
         except ValueError:
             self.data['dose_comparison_type'] = 'Relative Comparison'
-        self.data['dose_comparison'] = self.get_group_results(self.data['dose_comparison_type'])
+        # self.data['dose_comparison'] = self.get_group_results(self.data['dose_comparison_type'])
+        self.data['dose_comparison'] = self.get_group_dose_comparison(self.data['dose_comparison_type'])
         if '% Diff' in list(self.data['dose_comparison']):  # Alternate for Difference (%) for some versions of report?
             self.data['dose_comparison']['Difference (%)'] = self.data['dose_comparison']['% Diff']
         if 'Threshold' in list(self.data['dose_comparison']):  # Alternate for Threshold (%) for some versions of report?
@@ -61,20 +64,24 @@ class SNCPatientReport:
         # Summary Analysis Block
         try:
             self.text.index('Summary (Gamma Analysis)')
+            self.analysis_type = 'Summary (Gamma Analysis)'
             self.data['analysis_type'] = 'Gamma'
         except ValueError:
             try:
+                self.text.index('Summary (DTA Analysis)')
                 self.data['analysis_type'] = 'DTA'
             except ValueError:
+                self.text.index('Summary (GC Analysis)')
                 self.data['analysis_type'] = 'GC'  # Gradient Correction
 
-        self.data['summary'] = self.get_group_results('Summary (%s Analysis)' % self.data['analysis_type'])
+        # self.data['summary'] = self.get_group_results('Summary (%s Analysis)' % self.data['analysis_type'])
+        self.data['summary'] = self.get_group_analysis('Summary (%s Analysis)' % self.data['analysis_type'])
 
         # Gamma Index Summary Block
         try:
             self.text.index('Gamma Index Summary')
             self.data['gamma_stats'] = self.get_gamma_statistics('Gamma Index Summary')
-        except ValueError:
+        except:
             self.data['gamma_stats'] = {'Minimum': 'n/a', 'Maximum': 'n/a', 'Average': 'n/a',  'Stdv': 'n/a'}
 
         self.data['notes'] = self.text[self.text.index('Notes') + 1]
@@ -114,6 +121,77 @@ class SNCPatientReport:
 
         return group_results
 
+    def get_group_dose_comparison(self, data_group):
+        group_start = self.text.index(data_group)
+
+        group_end = False
+        group_end_index = 0
+        while not group_end:
+            if 'Summary ' in self.text[group_start+group_end_index]:
+                group_end = group_start + group_end_index
+            else:
+                group_end_index += 1
+
+        keys, values = [], []
+        for i in range(group_end_index-1):
+            row = self.text[group_start+i+1]
+            if row:
+                if ':' not in row:
+                    keys.append(row.strip())
+                else:
+                    values.append(row.replace(':', '').strip())
+        return {key: values[i] for i, key in enumerate(keys)}
+
+    def get_group_qa_parameters(self, data_group):
+        group_start = self.text.index(data_group)
+        ignored = ['arccheck', 'mapcheck', '.txt', '.snc', '.dcm']
+
+        group_end = False
+        group_end_index = 0
+        while not group_end:
+            if ' Dose Comparison' in self.text[group_start+group_end_index]:
+                group_end = group_start + group_end_index
+            else:
+                group_end_index += 1
+
+        keys, values = [], []
+        for i in range(group_end_index-1):
+            row = self.text[group_start+i+1]
+            if row:
+                if ' : ' in row:
+                    values.append(row.replace(':', '').strip())
+                else:
+                    if row.lower().strip() != 'plan':
+                        include_row = True
+                        for ignored_value in ignored:
+                            if ignored_value in row.lower():
+                                include_row = False
+                        if include_row:
+                            keys.append(row.strip())
+        return {key: values[i] for i, key in enumerate(keys)}
+
+    def get_group_analysis(self, data_group):
+        group_start = self.text.index(data_group)
+
+        group_end = False
+        group_end_index = 0
+        while not group_end:
+            if 'Dose Values in ' in self.text[group_start+group_end_index]:
+                group_end = group_start + group_end_index
+            else:
+                group_end_index += 1
+
+        keys, values = [], []
+        for i in range(group_end_index-1):
+            row = self.text[group_start+i+1]
+            if row:
+                if ' : ' in row:
+                    values.append(row.replace(':', '').strip())
+                else:
+                    if '*' not in row:
+                        keys.append(row.strip())
+        return {key: values[i] for i, key in enumerate(keys)}
+
     @property
     def summary_data(self):
         """
@@ -132,7 +210,7 @@ class SNCPatientReport:
             last_name = 'n/a'
             first_name = 'n/a'
 
-        return {'Patient Last Name': last_name,
+        data = {'Patient Last Name': last_name,
                 'Patient First Name': first_name,
                 'Patient ID': self.data['qa_file_parameter']['Patient ID'],
                 'Plan Date': self.data['qa_file_parameter']['Plan Date'],
@@ -155,6 +233,8 @@ class SNCPatientReport:
                 'X offset (mm)': self.data['cax_offset']['X offset'],
                 'Y offset (mm)':self.data['cax_offset']['Y offset'],
                 'Notes': self.data['notes']}
+
+        return data
 
     @property
     def csv(self):

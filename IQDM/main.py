@@ -17,7 +17,7 @@ from pathvalidate import sanitize_filename
 import subprocess
 
 
-CURRENT_VERSION = '0.3.1'
+CURRENT_VERSION = '0.3.2dev'
 
 SCRIPT_DIR = dirname(__file__)
 
