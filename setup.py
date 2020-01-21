@@ -12,11 +12,14 @@ requires = [
     'pathvalidate'
 ]
 
+with open('README.md', 'r') as doc:
+    long_description = doc.read()
+
 setup(
     name='IQDM',
     include_package_data=True,
     packages=find_packages(),
-    version='0.3',
+    version='0.3.1',
     description='Scans a directory for IMRT QA results',
     author='Dan Cutright',
     author_email='dan.cutright@gmail.com',
@@ -31,9 +34,6 @@ setup(
             'IQDM=IQDM.main:main',
         ],
     },
-    long_description="""IMRT QA Data Miner
-    
-    This software will iteratively scan all files with in a directory to extract data from IMRT QA reports 
-    and generate a csv file.
-    """
+    long_description=long_description,
+    long_description_content_type="text/markdown"
 )

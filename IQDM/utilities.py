@@ -5,8 +5,8 @@ Created on Thu May 30 2019
 @author: Dan Cutright, PhD
 """
 
-from os.path import isdir, join, splitext
-from os import walk
+from os.path import isdir, join, splitext, normpath
+from os import walk, listdir
 import zipfile
 from datetime import datetime
 from dateutil.parser import parse as date_parser
@@ -32,6 +32,9 @@ def are_all_strings_in_text(text, list_of_strings):
     return True
 
 
+#############################################################
+# CSV related functions
+#############################################################
 def get_csv(data, columns):
     """
     Convert a dictionary of data into a row for a csv file
@@ -46,34 +49,14 @@ def get_csv(data, columns):
     return DELIMITER.join(clean_csv)
 
 
-def extract_files_from_zipped_files(init_directory, extract_to_path, extension='.pdf'):
-    """
-    Function to extract .pdf files from zipped files
-    :param init_directory: initial top-level directory to walk through
-    :type init_directory: str
-    :param extract_to_path: directory to extract pdfs into
-    :type extract_to_path: str
-    :param extension: file extension of file type to extract, set to None to extract all files
-    :type extension: str or None
-    """
-    for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
-        for fileName in fileList:
-            if fileName.endswith('.zip'):
-                zip_file_path = join(dirName, fileName)
-                with zipfile.ZipFile(zip_file_path, 'r') as z:
-                    for file_name in z.namelist():
-                        if not isdir(file_name) and (extension is None or splitext(file_name)[1].lower == extension):
-                            temp_path = join(extract_to_path)
-                            z.extract(file_name, path=temp_path)
-
-
-def import_csv(file_path):
+def load_csv_file(file_path):
     with codecs.open(file_path, 'r', encoding='utf-8', errors='ignore') as doc:
-        raw_data = []
-        for line in doc:
-            raw_data.append(line.split(','))
+        return [line.split(',') for line in doc]
 
-    keys = raw_data.pop(0)
+
+def import_csv(file_path, day_first=False):
+    raw_data = load_csv_file(file_path)
+    keys = raw_data.pop(0)  # remove column header row
     keys = [key.strip() for key in keys if key.strip()] + ['file_name']
     data = {key: [] for key in keys}
     for row in raw_data:
@@ -83,7 +66,7 @@ def import_csv(file_path):
     sorted_data = {key: [] for key in keys}
     sorted_data['date_time_obj'] = []
 
-    date_time_objs = get_date_times(data)
+    date_time_objs = get_date_times(data, day_first=day_first)
 
     for i in get_sorted_indices(date_time_objs):
         for key in keys:
@@ -93,6 +76,21 @@ def import_csv(file_path):
     return sorted_data
 
 
+def get_file_names_from_csv_file(file_path):
+    raw_data = load_csv_file(file_path)
+    column_headers = raw_data.pop(0)  # remove column header row
+    fp_start = len(column_headers)
+    file_names = []
+    for row in raw_data:
+        file_name_fields = [value for value in row[fp_start:]]
+        file_name = ','.join(file_name_fields)
+        file_names.append(normpath(file_name.strip()))
+    return file_names
+
+
+#############################################################
+# Plotting and Stat related functions
+#############################################################
 def collapse_into_single_dates(x, y):
     """
     Function used for a time plot to convert multiple values into one value, while retaining enough information
@@ -153,11 +151,11 @@ def get_sorted_indices(some_list):
             return [i[0] for i in sorted(enumerate(temp_data), key=lambda x: x[1])]
 
 
-def get_date_times(data, datetime_key='Plan Date', row_id_key='Patient ID'):
+def get_date_times(data, datetime_key='Plan Date', row_id_key='Patient ID', day_first=False):
     dates = []
     for i, date_str in enumerate(data[datetime_key]):
         try:
-            dates.append(date_parser(date_str).date())
+            dates.append(date_parser(date_str, dayfirst=day_first).date())
         except ValueError:
             print('ERROR: Could not parse the following into a date: %s' % date_str)
             print("\tPatient ID: %s" % data[row_id_key][i])
@@ -184,3 +182,110 @@ def get_control_limits(y):
     lcl = center_line - 3 * avg_moving_range / scalar_d
 
     return center_line, ucl, lcl
+
+
+#############################################################
+# File related functions
+#############################################################
+def extract_files_from_zipped_files(init_directory, extract_to_path, extension='.pdf'):
+    """
+    Function to extract .pdf files from zipped files
+    :param init_directory: initial top-level directory to walk through
+    :type init_directory: str
+    :param extract_to_path: directory to extract pdfs into
+    :type extract_to_path: str
+    :param extension: file extension of file type to extract, set to None to extract all files
+    :type extension: str or None
+    """
+    for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
+        for fileName in fileList:
+            if splitext(fileName)[1].lower == '.zip':
+                zip_file_path = join(dirName, fileName)
+                with zipfile.ZipFile(zip_file_path, 'r') as z:
+                    for file_name in z.namelist():
+                        if not isdir(file_name) and (extension is None or splitext(file_name)[1].lower == extension):
+                            temp_path = join(extract_to_path)
+                            z.extract(file_name, path=temp_path)
+
+
+def find_latest_results(init_directory, no_recursive_search=False):
+    """
+    Find the most recent IQDM results csv file within the provided directory
+    :param init_directory: initial scan directory
+    :type init_directory: str
+    :param no_recursive_search: set to True to ignore subdirectories
+    :type no_recursive_search: bool
+    :return: a dictionary like {report_type: {'time_stamp': datetime, 'file_path': str}}
+    :rtype: dict
+    """
+    results = {}
+    if no_recursive_search:
+        process_result_csvs(listdir(init_directory), results)
+    else:
+        for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
+            process_result_csvs(fileList, results, directory_name=dirName)
+    return results
+
+
+def process_result_csvs(file_list, results, directory_name=None):
+    """
+    Parse each file for report type and time stamp, edit results with the latest file_path for each report_type
+    :param file_list: files to be parsed
+    :type file_list: list
+    :param results: results dict from find_latest_results()
+    :type results: dict
+    :param directory_name: optionally specify the directory
+    :type directory_name: str
+    """
+    for file_name in file_list:
+        fn = splitext(file_name)[0].lower()
+        ext = splitext(file_name)[1].lower()
+        if ext == '.csv' and '_results_' in fn:
+            try:
+                result_info = file_name.split('_')
+                report_type = result_info[0]
+                time_stamp = result_info[2].replace(ext, '')
+                time_stamp = datetime.strptime(time_stamp[:-7], '%Y-%m-%d %H-%M-%S')
+
+                if report_type and report_type not in results.keys() \
+                        or results[report_type]['time_stamp'] < time_stamp:
+                    if directory_name is None:
+                        file_path = file_name
+                    else:
+                        file_path = join(directory_name, file_name)
+                    results[report_type] = {'time_stamp': time_stamp, 'file_path': file_path}
+            except Exception:
+                continue
+
+
+def get_processed_files(init_directory, no_recursive_search=False):
+    processed = []
+    if no_recursive_search:
+        get_file_names_from_result_csvs(listdir(init_directory), processed)
+    else:
+        for dirName, subdirList, fileList in walk(init_directory):  # iterate through files and all sub-directories
+            get_file_names_from_result_csvs(fileList, processed, directory_name=dirName)
+    return list(set(processed))
+
+
+def get_file_names_from_result_csvs(file_list, processed, directory_name=None):
+    for file_name in file_list:
+        fn = splitext(file_name)[0].lower()
+        ext = splitext(file_name)[1].lower()
+        if ext == '.csv' and '_results_' in fn:
+            if directory_name is None:
+                file_path = file_name
+            else:
+                file_path = join(directory_name, file_name)
+            try:
+                file_names = get_file_names_from_csv_file(file_path)
+                processed.extend(file_names)
+            except Exception:
+                continue
+
+
+def is_file_name_found_in_processed_files(file_name, directory, processed_files):
+    for processed_file in processed_files:
+        if normpath(file_name) in processed_file or normpath(join(directory, file_name)) in processed_files:
+            return True
+    return False
