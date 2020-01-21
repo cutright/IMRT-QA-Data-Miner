@@ -1,57 +1,65 @@
 # IMRT-QA-Data-Miner
 Scans a directory for IMRT QA results.
 
-### Quick update
-Started working on a bokeh dashboard, feel free to try it out, but it's not ready for prime time.  
-To try it out, set the file path of your delta4 csv output from IQDM in line 22 of trending_delta4.py
-In a terminal, type:  
-`bokeh serve trending_delta4.py`  
-Then navigate to the link shown.  Must have the python library, bokeh, installed.  
-Like-wise for trending_arccheck.py.
-
-<img src="https://user-images.githubusercontent.com/4778878/71692503-ae78e600-2d6f-11ea-9bd6-851d9980972e.png" width='400'>
 
 ### Install
 ~~~~
-$ pip install IQDM
+pip install iqdm
 ~~~~
 
 ### How to run
+To scan a directory for IMRT QA report files and genereate a results .csv file:
 ~~~~
-$ IQDM <initial-scan-dir>
+iqdm <initial-scan-dir>
 ~~~~
+To launch a trending dashboard (and open the resulting link):
+~~~~
+iqdm <results-csv-file-path>
+~~~~
+
+Screenshot of dashboard:  
+<img src="https://user-images.githubusercontent.com/4778878/71692503-ae78e600-2d6f-11ea-9bd6-851d9980972e.png" width='400'>
+
 
 ### Command line usage
 ~~~~
-usage: IQDM [-h] [-ie] [-od OUTPUT_DIR] [-of OUTPUT_FILE] [-ver]
-            [--no-recursive-search]
-            [initial_directory]
+usage: iqdm [-h] [-ie] [-od OUTPUT_DIR] [-rd RESULTS_DIR] [-all]
+            [-of OUTPUT_FILE] [-ver] [-nr] [-df] [-p PORT]
+            [-wo WEBSOCKET_ORIGIN]
+            [file_path]
 
 Command line interface for IQDM
 
 positional arguments:
-  initial_directory     Scan this directory and all sub-directories
+  file_path             Initiate scan if directory, launch dashboard if
+                        results file
 
 optional arguments:
-  -h, --help            show this help message and exit  
-                        
+  -h, --help            show this help message and exit
   -ie, --ignore-extension
                         Script will check all files, not just ones with .pdf
-                        extensions  
-                        
+                        extensions
   -od OUTPUT_DIR, --output-dir OUTPUT_DIR
                         Output stored in local directory by default, specify
-                        otherwise here  
-                        
+                        otherwise here
+  -rd RESULTS_DIR, --results-dir RESULTS_DIR
+                        Results assumed to be stored in local directory by
+                        default, specify otherwise here
+  -all, --process-all   Process all identified report files, otherwise only
+                        new reports will be analyzed
   -of OUTPUT_FILE, --output-file OUTPUT_FILE
                         Output will be saved as <report_type>_results_<time-
                         stamp>.csv by default. Define this tag to customize
-                        file name after <report_type>_  
-                        
-  -ver, --version       Print the IQDM version  
-  
+                        file name after <report_type>_
+  -ver, --version       Print the IQDM version
   -nr, --no-recursive-search
                         Include this flag to skip sub-directories
+  -df, --day-first      Assume day first for ambiguous dates in trending
+                        dashboard
+  -p PORT, --port PORT  Specify port of trending dashboard webserver
+  -wo WEBSOCKET_ORIGIN, --allow-websocket-origin WEBSOCKET_ORIGIN
+                        Allow a websocket origin other than localhost, see
+                        bokeh documentation
 ~~~~
 
 ### Notes

@@ -144,6 +144,14 @@ def main():
                             help='Assume day first for ambiguous dates in trending dashboard',
                             default=False,
                             action='store_true')
+    cmd_parser.add_argument('-p', '--port',
+                            dest='port',
+                            help='Specify port of trending dashboard webserver',
+                            default='5006')
+    cmd_parser.add_argument('-wo', '--allow-websocket-origin',
+                            dest='websocket_origin',
+                            help='Allow a websocket origin other than localhost, see bokeh documentation',
+                            default=None)
     cmd_parser.add_argument('file_path', nargs='?',
                             help='Initiate scan if directory, launch dashboard if results file')
     args = cmd_parser.parse_args()
@@ -171,8 +179,12 @@ def main():
                 print('Did you provide an IQDM results csv?')
                 return
             try:
-                day_first = ['false', 'true'][args.day_first]
-                subprocess.run(['bokeh', 'serve', trend_path, '--args', path, day_first])
+                day_first = ['false', 'true'][args.day_first]  # must pass a string in subprocess.run()iq
+                cmd = ['bokeh', 'serve', trend_path, '--port', args.port]
+                if args.websocket_origin:
+                    cmd.extend(['--allow-websocket-origin', args.websocket_origin])
+                cmd.extend(['--args', path, day_first])
+                subprocess.run(cmd)
             except KeyboardInterrupt:
                 pass
 
