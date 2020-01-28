@@ -114,25 +114,26 @@ class Plot:
     def update_source(self, attr, old, new):
         for source_key in [1, 2]:
             new_data = {key: [] for key in ['x', 'y', 'id', 'gamma_crit', 'file_name', 'gamma_index']}
-            active_gamma = [gamma_options[a] for a in checkbox_button_group.active]
-            # if select_linac[source_key] != 'None':
-            for i in range(len(self.x)):
-                # if select_linac[source_key].value == 'All' or self.data['Radiation Dev'][i] == select_linac[source_key].value:
-                if end_date_picker.value > self.x[i] > start_date_picker.value:
-                    gamma_crit = "%s%%/%smm" % (self.data['Difference (%)'][i], self.data['Distance (mm)'][i])
-                    if 'Any' in active_gamma or gamma_crit in active_gamma:
-                        try:
-                            new_data['y'].append(float(self.data[select_y.value][i]))
-                        except ValueError:
-                            continue
 
-                        new_data['x'].append(self.x[i])
-                        new_data['id'].append(self.data['Patient ID'][i])
-                        new_data['gamma_crit'].append(gamma_crit)
-                        new_data['file_name'].append(self.data['file_name'][i])
-                        new_data['gamma_index'].append('%s%%' % self.data['% Passed'][i])
-                        # new_data['daily_corr'].append(self.data['Daily Corr'][i])
-                        # new_data['dta'].append('%s%%' % self.data['DTA'][i])
+            for i in range(len(self.x)):
+                if end_date_picker.value > self.x[i] > start_date_picker.value:
+                    try:
+                        gamma_crit = "%0.1f%%/%0.1fmm" % (float(self.data['Difference (%)'][i]), float(self.data['Distance (mm)'][i]))
+                        if self.is_gamma_included(gamma_crit):
+                            try:
+                                new_data['y'].append(float(self.data[select_y.value][i]))
+                            except ValueError:
+                                continue
+
+                            new_data['x'].append(self.x[i])
+                            new_data['id'].append(self.data['Patient ID'][i])
+                            new_data['gamma_crit'].append(gamma_crit)
+                            new_data['file_name'].append(self.data['file_name'][i])
+                            new_data['gamma_index'].append('%s%%' % self.data['% Passed'][i])
+                            # new_data['daily_corr'].append(self.data['Daily Corr'][i])
+                            # new_data['dta'].append('%s%%' % self.data['DTA'][i])
+                    except ValueError:
+                        pass
 
             try:
                 y = new_data['y']
@@ -149,6 +150,15 @@ class Plot:
             self.update_histogram(source_key, bin_size=20)
             self.update_trend(source_key, int(float(avg_len_input.value)), float(percentile_input.value))
             self.ichart.update_plot()
+
+    @staticmethod
+    def is_gamma_included(gamma_crit):
+        active_gamma = [gamma_options[a] for a in checkbox_button_group.active]
+        if gamma_crit in active_gamma:
+            return True
+        elif gamma_crit not in gamma_options and 'Others' in active_gamma:
+            return True
+        return False
 
     def update_histogram(self, source_key, bin_size=10):
         width_fraction = 0.9
@@ -332,29 +342,19 @@ y_options = [option for option in list(data) if option not in ignored_y]
 select_y = Select(title='Y-variable:', value='% Passed', options=y_options)
 select_y.on_change('value', plot.update_source)
 
-# linacs = list(set(data['Radiation Dev']))
-# linacs.sort()
-# linacs.insert(0, 'All')
-# linacs.append('None')
-# select_linac = {key: Select(title='Linac %s:' % key, value='All', options=['All'], width=250) for key in [1, 2]}
-# select_linac[2].value = 'None'
-# select_linac[1].on_change('value', plot.update_source)
-# select_linac[2].on_change('value', plot.update_source)
-
 avg_len_input = TextInput(title='Avg. Len:', value='10', width=100)
 avg_len_input.on_change('value', plot.update_source)
 
 percentile_input = TextInput(title='Percentile:', value='90', width=100)
 percentile_input.on_change('value', plot.update_source)
 
-
 start_date_picker = DatePicker(title='Start Date:', value=plot.x[0])
 end_date_picker = DatePicker(title='End Date:', value=plot.x[-1])
 start_date_picker.on_change('value', plot.update_source)
 end_date_picker.on_change('value', plot.update_source)
 
-gamma_options = ['5.0%/3.0mm', '3.0%/3.0mm', '3.0%/2.0mm', 'Any']
-checkbox_button_group = CheckboxButtonGroup(labels=gamma_options, active=[3])
+gamma_options = ['5.0%/3.0mm', '3.0%/3.0mm', '3.0%/2.0mm', '2.0%/2.0mm', 'Others']
+checkbox_button_group = CheckboxButtonGroup(labels=gamma_options, active=list(range(len(gamma_options))))
 checkbox_button_group.on_change('active', plot.update_source)
 
 text = {key: Div() for key in [1, 2]}
