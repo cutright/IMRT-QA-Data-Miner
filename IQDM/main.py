@@ -31,7 +31,6 @@ def pdf_to_qa_result(abs_file_path):
     """
 
     text = convert_pdf_to_txt(abs_file_path)
-
     report_obj = ReportParser(text)
     if report_obj.report is not None:
         return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns
@@ -87,10 +86,11 @@ def process_file(file_path, output_file, output_dir):
     try:
         row, report_type, columns = pdf_to_qa_result(file_path)  # process file
     except Exception as e:
+        print(file_path)
         print(str(e))
-        print('Skipping: %s' % file_path)
+        print('Skipped: ', file_path)
         return
-        
+
     current_file = "%s_%s" % (report_type, output_file)  # prepend report type to file name
     if output_dir:
         current_file = join(output_dir, current_file)
@@ -144,6 +144,11 @@ def main():
                             help='Assume day first for ambiguous dates in trending dashboard',
                             default=False,
                             action='store_true')
+    cmd_parser.add_argument('-mu', '--meas-uncertainty',
+                            dest='meas_uncertainty',
+                            help='Use true gamma criterion (undo meas uncertainty)',
+                            default=False,
+                            action='store_true')
     cmd_parser.add_argument('-p', '--port',
                             dest='port',
                             help='Specify port of trending dashboard webserver',
@@ -179,11 +184,14 @@ def main():
                 print('Did you provide an IQDM results csv?')
                 return
             try:
-                day_first = ['false', 'true'][args.day_first]  # must pass a string in subprocess.run()iq
+                day_first = ['false', 'true'][args.day_first]  # must pass a string in subprocess.run()
+                meas_uncertainty = ['false', 'true'][args.meas_uncertainty]
                 cmd = ['bokeh', 'serve', trend_path, '--port', args.port]
                 if args.websocket_origin:
                     cmd.extend(['--allow-websocket-origin', args.websocket_origin])
                 cmd.extend(['--args', path, day_first])
+                if basename(path).startswith('sncpatient_results_'):
+                    cmd.append(meas_uncertainty)
                 subprocess.run(cmd)
             except KeyboardInterrupt:
                 pass

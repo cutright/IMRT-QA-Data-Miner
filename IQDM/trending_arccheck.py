@@ -21,7 +21,8 @@ from IQDM.utilities import collapse_into_single_dates, moving_avg, get_control_l
 import sys
 
 FILE_PATH = sys.argv[1]
-DAY_FIRST = day_first = {'true': True, 'false': False}[sys.argv[2]]
+DAY_FIRST = {'true': True, 'false': False}[sys.argv[2]]
+MEAS_UNC = {'true': True, 'false': False}[sys.argv[3]]
 
 
 class Plot:
@@ -112,28 +113,30 @@ class Plot:
         self.histogram.yaxis.major_label_text_font_size = "15pt"
 
     def update_source(self, attr, old, new):
-        for source_key in [1, 2]:
+        for source_key in [1]:
             new_data = {key: [] for key in ['x', 'y', 'id', 'gamma_crit', 'file_name', 'gamma_index']}
 
             for i in range(len(self.x)):
                 if end_date_picker.value > self.x[i] > start_date_picker.value:
-                    try:
-                        gamma_crit = "%0.1f%%/%0.1fmm" % (float(self.data['Difference (%)'][i]), float(self.data['Distance (mm)'][i]))
-                        if self.is_gamma_included(gamma_crit):
-                            try:
-                                new_data['y'].append(float(self.data[select_y.value][i]))
-                            except ValueError:
-                                continue
+                    if select_equipment.value == self.data['Equipment'][i]:
+                        try:
+                            diff = float(self.data['Difference (%)'][i])
+                            if MEAS_UNC and self.data['Meas Uncertainty'][i].lower() == 'yes':
+                                diff += [0.7, 1][self.data['Equipment'][i] == 'ArcCheck']
+                            gamma_crit = "%0.1f%%/%0.1fmm" % (diff, float(self.data['Distance (mm)'][i]))
+                            if self.is_gamma_included(gamma_crit):
+                                try:
+                                    new_data['y'].append(float(self.data[select_y.value][i]))
+                                except ValueError:
+                                    continue
 
-                            new_data['x'].append(self.x[i])
-                            new_data['id'].append(self.data['Patient ID'][i])
-                            new_data['gamma_crit'].append(gamma_crit)
-                            new_data['file_name'].append(self.data['file_name'][i])
-                            new_data['gamma_index'].append('%s%%' % self.data['% Passed'][i])
-                            # new_data['daily_corr'].append(self.data['Daily Corr'][i])
-                            # new_data['dta'].append('%s%%' % self.data['DTA'][i])
-                    except ValueError:
-                        pass
+                                new_data['x'].append(self.x[i])
+                                new_data['id'].append(self.data['Patient ID'][i])
+                                new_data['gamma_crit'].append(gamma_crit)
+                                new_data['file_name'].append(self.data['file_name'][i])
+                                new_data['gamma_index'].append('%s%%' % self.data['% Passed'][i])
+                        except ValueError:
+                            pass
 
             try:
                 y = new_data['y']
@@ -290,8 +293,6 @@ class PlotControlChart:
         dates = self.main_plot.source[1]['plot'].data['x']
         gamma_crit = self.main_plot.source[1]['plot'].data['gamma_crit']
         gamma_index = self.main_plot.source[1]['plot'].data['gamma_index']
-        # daily_corr = self.main_plot.source[1]['plot'].data['daily_corr']
-        # dta = self.main_plot.source[1]['plot'].data['dta']
         file_name = self.main_plot.source[1]['plot'].data['file_name']
         x = list(range(len(dates)))
 
@@ -342,6 +343,9 @@ y_options = [option for option in list(data) if option not in ignored_y]
 select_y = Select(title='Y-variable:', value='% Passed', options=y_options)
 select_y.on_change('value', plot.update_source)
 
+select_equipment = Select(title='Equipment:', value='ArcCheck', options=['ArcCheck', 'MapCheck'])
+select_equipment.on_change('value', plot.update_source())
+
 avg_len_input = TextInput(title='Avg. Len:', value='10', width=100)
 avg_len_input.on_change('value', plot.update_source)
 
@@ -375,4 +379,4 @@ layout = column(row(select_y, avg_len_input, percentile_input),
 
 
 curdoc().add_root(layout)
-curdoc().title = "ArcCheck Trending"
+curdoc().title = "SNC Patient Trending"
