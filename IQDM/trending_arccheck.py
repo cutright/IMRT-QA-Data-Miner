@@ -344,7 +344,7 @@ select_y = Select(title='Y-variable:', value='% Passed', options=y_options)
 select_y.on_change('value', plot.update_source)
 
 select_equipment = Select(title='Equipment:', value='ArcCheck', options=['ArcCheck', 'MapCheck'])
-select_equipment.on_change('value', plot.update_source())
+select_equipment.on_change('value', plot.update_source)
 
 avg_len_input = TextInput(title='Avg. Len:', value='10', width=100)
 avg_len_input.on_change('value', plot.update_source)
@@ -365,7 +365,7 @@ text = {key: Div() for key in [1, 2]}
 
 plot.update_source(None, None, None)
 
-layout = column(row(select_y, avg_len_input, percentile_input),
+layout = column(row(select_y, avg_len_input, percentile_input, select_equipment),
                 row(start_date_picker, end_date_picker),
                 row(Div(text='Gamma Criteria: '), checkbox_button_group),
                 text[1],
