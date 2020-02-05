@@ -33,7 +33,7 @@ def pdf_to_qa_result(abs_file_path):
     text = convert_pdf_to_txt(abs_file_path)
     report_obj = ReportParser(text)
     if report_obj.report is not None:
-        return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns
+        return report_obj.csv + DELIMITER + abs_file_path, report_obj.report_type, report_obj.columns + ['file_name']
 
 
 def process_files(init_directory, ignore_extension=False, output_file=None, output_dir=None, no_recursive_search=False,

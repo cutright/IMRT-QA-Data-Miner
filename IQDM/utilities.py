@@ -57,7 +57,7 @@ def load_csv_file(file_path):
 def import_csv(file_path, day_first=False):
     raw_data = load_csv_file(file_path)
     keys = raw_data.pop(0)  # remove column header row
-    keys = [key.strip() for key in keys if key.strip()] + ['file_name']
+    keys = [key.strip() for key in keys if key.strip()]
     data = {key: [] for key in keys}
     for row in raw_data:
         for col, key in enumerate(keys):
