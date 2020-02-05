@@ -52,11 +52,15 @@ class SNCPatientReport:
         y_offset = '0'
         try:
             plan_index = self.text.index('Plan')
+        except ValueError:
+            try:
+                plan_index = self.text.index('Set2')
+            except ValueError:
+                pass
+        if plan_index:
             if self.text[plan_index + 2].find('CAX') > -1:
                 x_offset, y_offset = re.findall(r'[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?',
                                                 self.text[plan_index + 2])
-        except ValueError:
-            pass
 
         self.data['cax_offset'] = {'X offset': str(x_offset), 'Y offset': str(y_offset)}
 
