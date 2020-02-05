@@ -156,7 +156,7 @@ class SNCPatientReport:
 
     def get_group_qa_parameters(self, data_group):
         group_start = self.text.index(data_group)
-        ignored = ['arccheck', 'mapcheck', '.txt', '.snc', '.dcm']
+        ignored = ['arccheck', 'mapcheck', '.txt', '.snc', '.dcm', 'set1', 'set2']
 
         group_end = False
         group_end_index = 0
