@@ -2,6 +2,15 @@
 Scans a directory for IMRT QA results.
 
 
+### THIS PROJECT HAS MOVED
+This project has since been sponsored by the AAPM's IMRT Working Group. 
+There is a new project here: https://github.com/IQDM/IQDM-PDF
+
+The new version does not have plotting built in, but we plan to use 
+[DVHA Stats](https://github.com/cutright/DVHA-Stats) to take care of that 
+once enough testing has been done, and more vendors are added. 
+
+
 ### Install
 ~~~~
 pip install iqdm
